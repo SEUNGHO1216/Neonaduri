@@ -70,7 +70,6 @@ public class UserController {
         googleLoginService.googleLogin(code, response);
     }
 
-
      // 아이디 중복검사
     @PostMapping("/api/idcheck")
     public ResponseEntity<String> idcheck(@RequestBody DuplicateCheckDto duplicateCheckDto) {
