@@ -38,11 +38,11 @@ public class User {
     @Column(nullable = false)
     private String nickName;
 
-    @Column(nullable = true)
-    private String email;
+//    @Column(nullable = true)
+//    private String email;
 
-    @Column(nullable = true)
-    private Long kakaoId;
+//    @Column(nullable = true)
+//    private Long kakaoId;
 
     @Column(nullable = true)
     private String profileImgUrl;

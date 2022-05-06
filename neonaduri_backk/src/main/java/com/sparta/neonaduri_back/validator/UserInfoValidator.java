@@ -1,8 +1,11 @@
 package com.sparta.neonaduri_back.validator;
 
 
+import com.sparta.neonaduri_back.dto.user.IsLoginDto;
 import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
+import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.repository.UserRepository;
+import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
@@ -10,6 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @RestControllerAdvice
 @Component
@@ -23,13 +28,18 @@ public class UserInfoValidator {
 
     public String getValidMessage(SignupRequestDto signupRequestDto, Errors errors) {
 
+        String regex = "^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$";
+        String str = signupRequestDto.getUserName();
+
         if (errors.hasErrors()) {
             Map<String, String> validatorResult = validateHandling(errors);
             return validatorResult.get("message");
-        } else if (signupRequestDto.getUserName().contains(signupRequestDto.getPassword())) {
-            return "비밀번호는 아이디를 포함할 수 없습니다.";
+        } else if (!Pattern.matches(regex,str)) {
+            return "올바른 이메일 형식이 아닙니다.";
         } else if (userRepository.findByUserName(signupRequestDto.getUserName()).isPresent()) {
-            return "중복된 아이디 입니다.";
+            return "중복된 아이디가 존재합니다.";
+        } else if (signupRequestDto.getPassword().length() < 4) {
+            return "비밀번호는 4자리 이상 12자리 미만입니다.";
         } else {
             return "회원가입 성공";
         }
@@ -44,6 +54,40 @@ public class UserInfoValidator {
             validatorResult.put(validKeyName, error.getDefaultMessage());
         }
         return validatorResult;
+    }
+
+//    // 아이디 중복체크
+//    public HashMap<String, String> idDuplichk(String userName){
+//        HashMap<String, String> hashMap = new HashMap<>();
+//
+////        String usernameChk = String.valueOf(userRepository.findByUserName(userName).orElseThrow(
+////                () -> new IllegalArgumentException("존재하지 않는 아이디입니다.")
+////        ));
+//            System.out.println(userName + "이랑" + userRepository.findByUserName(userName));
+//            System.out.println(userRepository.findByUserName(userName).get().getUserName());
+//        if (userRepository.findByUserName(userName).isPresent()) {
+//            hashMap.put("status", "400");
+//        } else{
+//            hashMap.put("status", "OK");
+//        }
+//        return hashMap;
+//    }
+
+    //로그인 확인
+    public IsLoginDto isloginCheck(UserDetailsImpl userDetails){
+        System.out.println(userDetails.getUser().getUserName());
+        String userName = userDetails.getUsername();
+        String nickName = userDetails.getNickName();
+        String profileImgUrl = userDetails.getProfileImgUrl();
+        int totalLike = userDetails.getTotalLike();
+
+//        Optional<User> user = userRepository.findByUserName(userName);
+        return IsLoginDto.builder()
+                .userName(userName)
+                .nickName(nickName)
+                .profileImgUrl(profileImgUrl)
+                .totalLike(totalLike)
+                .build();
     }
 
 //    public Page<PostListDto> overPages(List<PostListDto> postList, int start, int end, Pageable pageable, int page) {
