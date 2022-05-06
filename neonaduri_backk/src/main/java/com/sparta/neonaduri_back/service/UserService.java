@@ -57,11 +57,6 @@ public class UserService {
         }
     }
 
-    // 아이디 중복체크
-    public boolean idDuplichk(String userName){
-       return userRepository.findByUserName(userName).isPresent();
-    }
-
     //유저 프로필 수정
     @Transactional
     public void updateUserInfo(MultipartFile multipartFile, String nickName, Long userId) throws IOException {

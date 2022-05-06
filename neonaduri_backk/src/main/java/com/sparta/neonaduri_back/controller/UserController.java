@@ -73,7 +73,7 @@ public class UserController {
      // 아이디 중복검사
     @PostMapping("/api/idcheck")
     public ResponseEntity<String> idcheck(@RequestBody DuplicateCheckDto duplicateCheckDto) {
-        if (!userService.idDuplichk(duplicateCheckDto.getUserName())) {
+        if (!userInfoValidator.idDuplichk(duplicateCheckDto.getUserName())) {
              return ResponseEntity.status(200)
                      .body("200");
         } else {

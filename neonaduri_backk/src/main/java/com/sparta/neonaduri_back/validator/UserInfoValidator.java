@@ -56,22 +56,10 @@ public class UserInfoValidator {
         return validatorResult;
     }
 
-//    // 아이디 중복체크
-//    public HashMap<String, String> idDuplichk(String userName){
-//        HashMap<String, String> hashMap = new HashMap<>();
-//
-////        String usernameChk = String.valueOf(userRepository.findByUserName(userName).orElseThrow(
-////                () -> new IllegalArgumentException("존재하지 않는 아이디입니다.")
-////        ));
-//            System.out.println(userName + "이랑" + userRepository.findByUserName(userName));
-//            System.out.println(userRepository.findByUserName(userName).get().getUserName());
-//        if (userRepository.findByUserName(userName).isPresent()) {
-//            hashMap.put("status", "400");
-//        } else{
-//            hashMap.put("status", "OK");
-//        }
-//        return hashMap;
-//    }
+    // 아이디 중복체크
+    public boolean idDuplichk(String userName){
+        return userRepository.findByUserName(userName).isPresent();
+    }
 
     //로그인 확인
     public IsLoginDto isloginCheck(UserDetailsImpl userDetails){
