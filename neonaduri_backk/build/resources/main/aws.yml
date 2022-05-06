@@ -10,6 +10,7 @@ cloud:
     stack:
       auto: false
 
+
 spring:
   security:
     oauth2:
