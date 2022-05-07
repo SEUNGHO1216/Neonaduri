@@ -11,6 +11,7 @@ package com.sparta.neonaduri_back.security.jwt;
  *   수정일     수정자             수정내용
  *  --------   --------    ---------------------------
  *  2022.05.05 오예령       토큰 안에 profileImgUrl, totalLike 추가
+ *  2022.05.07 오예령       토큰 안에 totalLike 제거
  */
 
 import com.auth0.jwt.JWT;
@@ -35,7 +36,6 @@ public final class JwtTokenUtils {
     public static final String CLAIM_USER_NAME = "userName";
     public static final String CLAIM_NICK_NAME = "nickName";
     public static final String CLAIM_PROFILE_IMG_URL = "profileImgUrl";
-    public static final String CLAIM_TOTAL_LIKE = "totalLike";
     public static final String JWT_SECRET = "jwt_secret_!@#$%";
 
     public static String generateJwtToken(UserDetailsImpl userDetails) {
@@ -45,7 +45,6 @@ public final class JwtTokenUtils {
                     .withClaim(CLAIM_USER_NAME, userDetails.getUsername())
                     .withClaim(CLAIM_NICK_NAME, userDetails.getNickName())
                     .withClaim(CLAIM_PROFILE_IMG_URL, userDetails.getProfileImgUrl())
-                    .withClaim(CLAIM_TOTAL_LIKE, userDetails.getTotalLike())
                     // 토큰 만료 일시 = 현재 시간 + 토큰 유효기간)
                     .withClaim(CLAIM_EXPIRED_DATE, new Date(System.currentTimeMillis() + JWT_TOKEN_VALID_MILLI_SEC))
                     .sign(generateAlgorithm());

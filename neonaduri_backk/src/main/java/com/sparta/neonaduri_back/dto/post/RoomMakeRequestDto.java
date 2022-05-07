@@ -1,8 +1,12 @@
 package com.sparta.neonaduri_back.dto.post;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Setter
 @Getter
 public class RoomMakeRequestDto {
@@ -14,6 +18,5 @@ public class RoomMakeRequestDto {
     private String postTitle;
     private String location;
     private String theme;
-
 
 }

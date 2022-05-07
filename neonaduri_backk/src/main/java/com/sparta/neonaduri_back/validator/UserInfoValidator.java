@@ -1,9 +1,25 @@
 package com.sparta.neonaduri_back.validator;
 
+/**
+ * [validator] - 유효성 검사
+ *
+ * @class   : UserInfoValidator
+ * @author  : 오예령
+ * @since   : 2022.04.30
+ * @version : 1.0
+ *
+ *   수정일     수정자             수정내용
+ *  --------   --------    ---------------------------
+ *  2022.05.06 오예령       유효성 검사 추가, 아이디 중복 체크
+ *  2022.05.07 오예령       유저 정보 조회 return 형태 변경 (리팩토링)
+ */
+
 
 import com.sparta.neonaduri_back.dto.post.MyLikePostDto;
+import com.sparta.neonaduri_back.dto.post.PostListDto;
 import com.sparta.neonaduri_back.dto.user.IsLoginDto;
 import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
+import com.sparta.neonaduri_back.model.Post;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.repository.UserRepository;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
@@ -66,26 +82,31 @@ public class UserInfoValidator {
         return userRepository.findByUserName(userName).isPresent();
     }
 
-    //로그인 확인
+    // 유저 정보 확인
     public IsLoginDto isloginCheck(UserDetailsImpl userDetails){
-        System.out.println(userDetails.getUser().getUserName());
         String userName = userDetails.getUsername();
         String nickName = userDetails.getNickName();
         String profileImgUrl = userDetails.getProfileImgUrl();
-        int totalLike = userDetails.getTotalLike();
 
-//        Optional<User> user = userRepository.findByUserName(userName);
         return IsLoginDto.builder()
                 .userName(userName)
                 .nickName(nickName)
                 .profileImgUrl(profileImgUrl)
-                .totalLike(totalLike)
                 .build();
     }
 
     // 페이징 처리
     public Page<MyLikePostDto> overPages(List<MyLikePostDto> postList, int start, int end, Pageable pageable, int pageno) {
         Page<MyLikePostDto> pages = new PageImpl(postList.subList(start, end), pageable, (long)postList.size());
+        if (pageno > pages.getTotalPages()) {
+            throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
+        } else {
+            return pages;
+        }
+    }
+
+    public Page<PostListDto> overPages2(List<PostListDto> postList, int start, int end, Pageable pageable, int pageno) {
+        Page<PostListDto> pages = new PageImpl(postList.subList(start, end), pageable, (long)postList.size());
         if (pageno > pages.getTotalPages()) {
             throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
         } else {

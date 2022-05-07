@@ -11,6 +11,7 @@ package com.sparta.neonaduri_back.security;
  *   수정일     수정자             수정내용
  *  --------   --------    ---------------------------
  *  2022.05.03 오예령       회원 정보에 프로필이미지(profileImgUrl)와 받은 좋아요 개수(totalLike) 추가
+ *  2022.05.07 오예령       토큰 안에 totalLike 제거
  */
 
 
@@ -49,10 +50,6 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getProfileImgUrl(){
         return user.getProfileImgUrl();
-    }
-
-    public int getTotalLike(){
-        return user.getTotalLike();
     }
 
     @Override
