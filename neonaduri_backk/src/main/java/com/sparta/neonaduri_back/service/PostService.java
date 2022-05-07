@@ -92,7 +92,7 @@ public class PostService {
                 boolean islike=true;
                 int likeCnt=countLike(post.getPostId());
                 MyLikePostDto myLikePostDto=new MyLikePostDto(post.getPostId(), post.getPostImgUrl()
-                ,post.getTitle(),post.getLocation(),post.getStartDate(),
+                ,post.getPostTitle(),post.getLocation(),post.getStartDate(),
                         post.getEndDate(),islike, likeCnt,post.getTheme());
                 postList.add(myLikePostDto);
             }

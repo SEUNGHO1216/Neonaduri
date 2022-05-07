@@ -1,6 +1,5 @@
 package com.sparta.neonaduri_back.repository;
 
-
 import com.sparta.neonaduri_back.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

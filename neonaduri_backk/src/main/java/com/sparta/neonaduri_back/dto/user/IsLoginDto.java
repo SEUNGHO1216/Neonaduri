@@ -24,7 +24,7 @@ import lombok.Setter;
 public class IsLoginDto {
     private String userName;
     private String nickName;
-    private String profileImg;
+    private String profileImgUrl;
     private int totalLike;
     private String email;
 

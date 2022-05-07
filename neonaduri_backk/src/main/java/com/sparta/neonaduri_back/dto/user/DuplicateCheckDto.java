@@ -15,9 +15,10 @@ package com.sparta.neonaduri_back.dto.user;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Setter
+@NoArgsConstructor
 @Getter
 public class DuplicateCheckDto {
     private String userName;

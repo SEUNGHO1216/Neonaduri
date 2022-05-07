@@ -10,13 +10,13 @@ cloud:
     stack:
       auto: false
 
-#구글 소셜 로그인 ,,
+
 spring:
   security:
     oauth2:
       client:
         registration:
           google:
-            client-id:
-            client-secret:
+            client-id: 230381204395-ma19d0a9gn8putfail4k256v7pf16rug.apps.googleusercontent.com
+            client-secret: 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
             scope: profile,email,openid
