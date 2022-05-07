@@ -17,10 +17,3 @@ public class RoomMakeRequestDto {
 
 
 }
-
-/*startDate :  2022-04-28
-endDate : 2022-04-30
-dateCnt : 3,
-title : 부산 여행
-location : 부산,
-theme : 액티비티*/

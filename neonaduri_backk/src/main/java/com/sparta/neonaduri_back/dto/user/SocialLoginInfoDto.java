@@ -35,7 +35,6 @@ public class SocialLoginInfoDto {
         this.totalLike = totalLike;
     }
 
-
     // 구글 소셜 로그인
     public SocialLoginInfoDto(String userName, String nickName, String profileImgUrl) {
         this.userName = userName;

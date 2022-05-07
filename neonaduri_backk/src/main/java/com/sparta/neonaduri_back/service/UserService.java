@@ -15,11 +15,9 @@ package com.sparta.neonaduri_back.service;
  */
 
 
-import com.sparta.neonaduri_back.dto.user.IsLoginDto;
 import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.repository.UserRepository;
-import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.validator.UserInfoValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.Optional;
 
 
 @Service
@@ -56,42 +53,8 @@ public class UserService {
              userRepository.save(user);
              return "회원가입 성공";
         }else{
-            return "회원가입 실패";
+            return message;
         }
-    }
-
-    // 아이디 중복체크
-    public HashMap<String, String> idDuplichk(String userName){
-       HashMap<String, String> hashMap = new HashMap<>();
-       if (userRepository.findByUserName(userName).isPresent()){
-
-           hashMap.put("status", "400");
-//           hashMap.put("msg", "중복된 아이디입니다");
-           return hashMap;
-       } else{
-           hashMap.put("status", "OK");
-//           hashMap.put("msg", "사용가능한 아이디입니다");
-           return hashMap;
-       }
-
-    }
-
-    //로그인 확인
-    public IsLoginDto isloginChk(UserDetailsImpl userDetails){
-        System.out.println(userDetails.getUser().getUserName());
-       String userName = userDetails.getUsername();
-       String nickName = userDetails.getNickName();
-       String profileImg = userDetails.getProfileImgUrl();
-       int totalLike = userDetails.getTotalLike();
-
-       Optional<User> user = userRepository.findByUserName(userName);
-       IsLoginDto isLoginDto = IsLoginDto.builder()
-               .userName(userName)
-               .nickName(nickName)
-               .profileImg(profileImg)
-               .totalLike(totalLike)
-               .build();
-       return isLoginDto;
     }
 
     //유저 프로필 수정
