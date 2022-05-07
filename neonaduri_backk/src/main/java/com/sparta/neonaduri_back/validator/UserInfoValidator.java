@@ -1,17 +1,22 @@
 package com.sparta.neonaduri_back.validator;
 
 
+import com.sparta.neonaduri_back.dto.post.MyLikePostDto;
 import com.sparta.neonaduri_back.dto.user.IsLoginDto;
 import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.repository.UserRepository;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -78,13 +83,14 @@ public class UserInfoValidator {
                 .build();
     }
 
-//    public Page<PostListDto> overPages(List<PostListDto> postList, int start, int end, Pageable pageable, int page) {
-//        Page<PostListDto> pages = new PageImpl<>(postList.subList(start, end), pageable, postList.size());
-//        if(page > pages.getTotalPages()){
-//            throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
-//        }
-//        return pages;
-//    }
-
+    // 페이징 처리
+    public Page<MyLikePostDto> overPages(List<MyLikePostDto> postList, int start, int end, Pageable pageable, int pageno) {
+        Page<MyLikePostDto> pages = new PageImpl(postList.subList(start, end), pageable, (long)postList.size());
+        if (pageno > pages.getTotalPages()) {
+            throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
+        } else {
+            return pages;
+        }
+    }
 
 }

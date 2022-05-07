@@ -32,7 +32,7 @@ public class Post extends Timestamped{
     private int dateCnt;
 
     @Column(nullable = false)
-    private String title;
+    private String postTitle;
 
     @Column(nullable = false)
     private String location;
@@ -64,7 +64,7 @@ public class Post extends Timestamped{
         this.startDate=roomMakeRequestDto.getStartDate();
         this.endDate=roomMakeRequestDto.getEndDate();
         this.dateCnt=roomMakeRequestDto.getDateCnt();
-        this.title=roomMakeRequestDto.getPostTitle();
+        this.postTitle=roomMakeRequestDto.getPostTitle();
         this.location=roomMakeRequestDto.getLocation();
         this.theme=roomMakeRequestDto.getTheme();
         this.user=user;

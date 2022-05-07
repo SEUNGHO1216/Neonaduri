@@ -91,7 +91,7 @@ public class UserController {
 
     // 회원정보 수정
     @PutMapping("/api/user/mypage")
-    public ResponseEntity<StatusMessage> updateUserInfo(@RequestParam("profileImg") MultipartFile multipartFile,
+    public ResponseEntity<StatusMessage> updateUserInfo(@RequestParam("profileImgFile") MultipartFile multipartFile,
                                                         @RequestParam String profileImgUrl,
                                                         @RequestParam("nickName") String nickName,
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
