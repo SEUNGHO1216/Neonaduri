@@ -36,11 +36,7 @@ public class Review extends Timestamped{
     @JoinColumn(name = "user_Id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "post_Id")
-    private Post post;
-//
-//    @Column
-//    private Long postId;
+    @Column(nullable = false)
+    private Long postId;
 
 }

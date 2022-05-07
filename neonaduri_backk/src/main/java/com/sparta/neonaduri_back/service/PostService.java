@@ -147,7 +147,7 @@ public class PostService {
             //로그인 유저가 찜한 것인지 여부 확인
             post.setIslike(userLikeTrueOrNot(userId, post.getPostId()));
             //게시물의 reviewCnt 계산
-            int reviewCnt=reviewRepository.countByPost(post).intValue();
+            int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
 
             BestAndLocationDto bestAndLocationDto =new BestAndLocationDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
                     post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt);
@@ -183,7 +183,7 @@ public class PostService {
             //로그인 유저가 찜한 것인지 여부 확인
             post.setIslike(userLikeTrueOrNot(userId, post.getPostId()));
             //게시물의 reviewCnt 계산
-            int reviewCnt=reviewRepository.countByPost(post).intValue();
+            int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
 
             BestAndLocationDto bestAndLocationDto =new BestAndLocationDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
                     post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt);
