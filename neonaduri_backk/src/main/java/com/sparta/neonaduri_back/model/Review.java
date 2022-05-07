@@ -27,7 +27,7 @@ public class Review extends Timestamped{
     private Long id;
 
     @Column(nullable = false)
-    private String reviewContent;
+    private String reviewContents;
 
     @Column(nullable = true)
     private String reviewImgUrl;

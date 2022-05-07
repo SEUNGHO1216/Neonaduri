@@ -1,9 +1,6 @@
 package com.sparta.neonaduri_back.controller;
 
-import com.sparta.neonaduri_back.dto.post.MyLikePostDto;
-import com.sparta.neonaduri_back.dto.post.MyLikeResponseDto;
-import com.sparta.neonaduri_back.dto.post.PostRequestDto;
-import com.sparta.neonaduri_back.dto.post.RoomMakeRequestDto;
+import com.sparta.neonaduri_back.dto.post.*;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.service.PostService;
@@ -15,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -70,6 +69,19 @@ public class PostController {
         System.out.println(postList.getNumber()+1);
         MyLikeResponseDto myLikeResponseDto = new MyLikeResponseDto(totalLike, postList, islastPage);
         return myLikeResponseDto;
+    }
+
+    //인기 게시물 4개 조회
+    @GetMapping("/api/planning/best")
+    public List<BestAndLocationDto> showBestPosts(@AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return postService.showBestPosts(userDetails);
+    }
+
+    //지역별 조회(20개)
+    @GetMapping("/api/planning/location/{location}")
+    public List<BestAndLocationDto> showLocationPosts(@PathVariable String location, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        return postService.showLocationPosts(location,userDetails);
     }
 
 }
