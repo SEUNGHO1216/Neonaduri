@@ -17,10 +17,12 @@ import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @NoArgsConstructor
+@Setter
 @Getter
 @Entity
 public class User {
