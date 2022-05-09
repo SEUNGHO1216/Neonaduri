@@ -5,6 +5,7 @@ import com.sparta.neonaduri_back.model.*;
 import com.sparta.neonaduri_back.repository.*;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.validator.UserInfoValidator;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -115,10 +116,6 @@ public class PostService {
         Sort sort = Sort.by(direction, "id");
         return PageRequest.of(pageno, 6, sort);
     }
-//    //게시물의 찜개수 세기 (likeCnt)
-//    private int countLike(Long postId) {
-//        return likeRepository.countByPostId(postId).intValue();
-//    }
 
     //totalLike 계산하기
     public int getTotalLike(UserDetailsImpl userDetails) {
@@ -202,7 +199,7 @@ public class PostService {
         }
 
         int start=pageno*8;
-        int end=Math.min((start+8), locationPostList.size());
+        int end=Math.min((start+8), locationList.size());
 
         return validator.overPagesCheck(locationList,start,end,pageable,pageno);
     }
@@ -243,7 +240,7 @@ public class PostService {
         }
 
         int start=pageno*8;
-        int end=Math.min((start+8), themePostList.size());
+        int end=Math.min((start+8), themeList.size());
 
         return validator.overPageCheck2(themeList,start,end,pageable,pageno);
     }
@@ -307,7 +304,7 @@ public class PostService {
         return validator.overPageCheck2(searchList,start,end,pageable,pageno);
     }
 
-}
+
     // 플랜 계획 조회하기
     public RoomMakeRequestDto getPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(
@@ -324,46 +321,24 @@ public class PostService {
         // 유저가 작성한 글 조회
         List<Post> posts = postRepository.findAllByUser(userDetails.getUser());
 
-        Pageable pageable = getPageable(pageno);
+        Pageable pageable = getPageableList(pageno);
 
         List<PostListDto> myplanList = new ArrayList<>();
 
         for (Post post : posts) {
+            if(!post.isIspublic() || post.getDays().size()==0) continue;
             PostListDto postListDto = new PostListDto(post.getPostId(), post.getStartDate(), post.getEndDate(), post.getDateCnt(), post.getPostTitle(),
                     post.getLocation(), post.getTheme());
             myplanList.add(postListDto);
 
         }
 
-        int start = pageno * 6;
-        int end = Math.min((start + 6), myplanList.size());
+        int start = pageno * 8;
+        int end = Math.min((start + 8), myplanList.size());
 
         return validator.overPages2(myplanList, start, end, pageable, pageno);
     }
 
-    //삭제하기
-    @Transactional
-    public ResponseEntity<String> deletePlan(Long postId, UserDetailsImpl userDetails) {
-        Post post = postRepository.findByPostId(postId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 게시물입니다.")
-        );
-        if (post == null) {
-            return new ResponseEntity<>("없는 게시글입니다.", HttpStatus.BAD_REQUEST);
-        }
-        if (post.getUser().getUserName() != userDetails.getUser().getUserName()) {
-            return new ResponseEntity<>("없는 사용자이거나 다른 사용자의 게시글입니다.", HttpStatus.BAD_REQUEST);
-        }
-        postRepository.deleteById(postId);
-        return new ResponseEntity<>("성공적으로 삭제 하였습니다.",HttpStatus.OK);
-    }
-
-    //상세보기 - 수정 필요!
-    public PostListDto detailPlan(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(
-                ()-> new IllegalArgumentException("게시물이 존재하지 않습니다.")
-        );
-        return new PostListDto(post);
-    }
 
     //플랜 저장 안함.(새로고침 뒤로가기)
     @Transactional

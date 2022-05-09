@@ -33,6 +33,7 @@ public class LikeService {
             likeResponseDto.setLike(false);
         }else{
         //아직 찜 안 한 경우
+            //
             Likes likes=new Likes(userId, postId);
             likeRepository.save(likes);
             likeResponseDto.setLike(true);

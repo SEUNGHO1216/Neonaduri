@@ -24,8 +24,13 @@ import com.sparta.neonaduri_back.dto.user.IsLoginDto;
 import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
 import com.sparta.neonaduri_back.model.Post;
 import com.sparta.neonaduri_back.model.User;
+import com.sparta.neonaduri_back.repository.LikeRepository;
+import com.sparta.neonaduri_back.repository.PostRepository;
 import com.sparta.neonaduri_back.repository.UserRepository;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
+import com.sparta.neonaduri_back.service.PostService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -40,14 +45,21 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+
 @RestControllerAdvice
 @Component
 public class UserInfoValidator {
 
     private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
 
-    public UserInfoValidator(UserRepository userRepository) {
+    @Autowired
+    public UserInfoValidator(UserRepository userRepository, PostRepository postRepository,
+                             LikeRepository likeRepository) {
         this.userRepository = userRepository;
+        this.postRepository = postRepository;
+        this.likeRepository = likeRepository;
     }
 
     public String getValidMessage(SignupRequestDto signupRequestDto, Errors errors) {
@@ -87,11 +99,13 @@ public class UserInfoValidator {
 
     //로그인 확인
     public IsLoginDto isloginCheck(UserDetailsImpl userDetails){
+
+
         System.out.println(userDetails.getUser().getUserName());
         String userName = userDetails.getUsername();
         String nickName = userDetails.getNickName();
         String profileImgUrl = userDetails.getProfileImgUrl();
-        int totalLike = userDetails.getTotalLike();
+        int totalLike = getTotalLike(userDetails);
 
 //        Optional<User> user = userRepository.findByUserName(userName);
         return IsLoginDto.builder()
@@ -102,6 +116,20 @@ public class UserInfoValidator {
                 .build();
     }
 
+    public int getTotalLike(UserDetailsImpl userDetails) {
+
+        //내가 쓴 게시물 다 조회
+        List<Post> posts=postRepository.findAllByUserOrderByModifiedAtDesc(userDetails.getUser());
+        int totalLike=0;
+
+        //내가 쓴 게시물이 있다면 찜 엔티티에서 게시물 갯수 카운트 -> 유저들한테 찜받은 갯수를 말함
+        for(Post eachPost: posts){
+            Long postId=eachPost.getPostId();
+            totalLike+=likeRepository.countByPostId(postId);
+        }
+
+        return totalLike;
+    }
     // 페이징 처리
     public Page<MyLikePostDto> overPages(List<MyLikePostDto> postList, int start, int end, Pageable pageable, int pageno) {
         Page<MyLikePostDto> pages = new PageImpl<>(postList.subList(start, end), pageable, (long)postList.size());
@@ -123,7 +151,7 @@ public class UserInfoValidator {
     }
 
     public Page<ThemeAndSearchDto> overPageCheck2(List<ThemeAndSearchDto> postList, int start, int end, Pageable pageable, int pageno) {
-        Page<ThemeAndSearchDto> pages = new PageImpl<>(postList.subList(start, end), pageable, (long)postList.size());
+        Page<ThemeAndSearchDto> pages = new PageImpl<>(postList.subList(start, end), pageable, postList.size());
         if (pageno > pages.getTotalPages()) {
             throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
         } else {
@@ -132,7 +160,7 @@ public class UserInfoValidator {
     }
 
     public Page<PostListDto> overPages2(List<PostListDto> postList, int start, int end, Pageable pageable, int pageno) {
-        Page<PostListDto> pages = new PageImpl(postList.subList(start, end), pageable, (long)postList.size());
+        Page<PostListDto> pages = new PageImpl(postList.subList(start, end), pageable, postList.size());
         if (pageno > pages.getTotalPages()) {
             throw new IllegalArgumentException("요청할 수 없는 페이지 입니다.");
         } else {

@@ -9,9 +9,6 @@ import com.sparta.neonaduri_back.utils.StatusEnum;
 import com.sparta.neonaduri_back.utils.StatusMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -183,16 +180,4 @@ public class PostController {
         return postList;
     }
 
-//    // 내가 작성한 플랜 삭제
-//    @DeleteMapping("/api/user/delplan/{postId}")
-//    public ResponseEntity<String> deletePost(@PathVariable Long postId,
-//                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-//        return postService.deletePlan(postId, userDetails);
-//    }
-
-    // 플랜 상세 조회
-    @GetMapping("/api/detail/{postId}")
-    public PostListDto detailPlan(@PathVariable Long postId) {
-        return postService.detailPlan(postId);
-    }
 }
