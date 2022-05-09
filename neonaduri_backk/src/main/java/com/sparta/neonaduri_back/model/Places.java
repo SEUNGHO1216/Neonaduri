@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Places {
+public class Places extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long placeId;
@@ -33,10 +33,10 @@ public class Places {
     private String placeMemo;
 
     @Column(nullable = false)
-    private Long lat;
+    private String lat;
 
     @Column(nullable = false)
-    private Long lng;
+    private String lng;
 
 //    @ManyToOne
 //    @JoinColumn(name = "DAYS_ID")

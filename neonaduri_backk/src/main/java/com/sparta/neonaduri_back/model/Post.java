@@ -57,7 +57,7 @@ public class Post extends Timestamped{
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "days")
     private List<Days> days = new ArrayList<>();
 

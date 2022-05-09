@@ -139,8 +139,10 @@ public class PostService {
         List<BestAndLocationDto> bestList=new ArrayList<>();
 
         for(int i=0;i<postList.size();i++){
+
             if(i>3) break;
             Post post=postList.get(i);
+            if(post.getDays().size()==0) continue;
             //찜받은 갯수 확인
 //            int likeCnt=countLike(post.getPostId());
             Long userId=userDetails.getUser().getId();
@@ -159,24 +161,29 @@ public class PostService {
     //로그인한 유저가 찜한 게시물 인지 확인하는 메소드(setIsisLike)
     public boolean userLikeTrueOrNot(Long userId, Long postId){
         Optional<Likes> isUserLike=likeRepository.findByPostIdAndUserId(postId,userId);
+        //유저가 찜한 기록이 있디면
         if(isUserLike.isPresent()){
-            return false;
-        }else{
             return true;
+        }else{
+            //찜한 기록 없다면
+            return false;
         }
     }
 
-    //지역별 검색(20개 조회)
-    public List<BestAndLocationDto> showLocationPosts(String location, UserDetailsImpl userDetails) {
+    //지역별 검색(8개 조회)
+    public Page<BestAndLocationDto> showLocationPosts(String location, int pageno, UserDetailsImpl userDetails) {
+
         List<Post> locationPostList=postRepository.findAllByLocationOrderByLikeCntDesc(location);
 
         List<BestAndLocationDto> locationList=new ArrayList<>();
 
+        Pageable pageable= getPageableList(pageno);
+
+
         for(int i=0;i<locationPostList.size();i++){
-            if(i>19) break;
             Post post=locationPostList.get(i);
             //나만보기 상태이면 추가 안함(jpa로 조건 걸 수 있으나 db에 너무 많은 작업이 가는 것 같아서 자바단에서 실행)
-            if(!post.isIspublic()) continue;
+            if(!post.isIspublic() || post.getDays().size()==0) continue;
             //찜받은 갯수 확인
 //            int likeCnt=countLike(post.getPostId());
             Long userId=userDetails.getUser().getId();
@@ -189,7 +196,112 @@ public class PostService {
                     post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt);
             locationList.add(bestAndLocationDto);
         }
-        return locationList;
+
+        int start=pageno*8;
+        int end=Math.min((start+8), locationPostList.size());
+
+        return validator.overPagesCheck(locationList,start,end,pageable,pageno);
     }
+    //bestList, locationList 페이징
+    private Pageable getPageableList(int pageno) {
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "id");
+        return PageRequest.of(pageno, 8, sort);
+    }
+
+    //테마별 검색조회(8개)
+    public Page<ThemeAndSearchDto> showThemePosts(String theme, int pageno, UserDetailsImpl userDetails) {
+
+        List<Post> themePostList=postRepository.findAllByThemeOrderByLikeCntDesc(theme);
+
+        List<ThemeAndSearchDto> themeList=new ArrayList<>();
+
+        Pageable pageable= getPageableList(pageno);
+
+
+        for(int i=0;i<themePostList.size();i++){
+            Post post=themePostList.get(i);
+
+            //나만보기 상태이면 추가 안함(jpa로 조건 걸 수 있으나 db에 너무 많은 작업이 가는 것 같아서 자바단에서 실행)
+            //추가로 days 길이가 0이면 방만 만들어지고, 여행계획은 세우지 않은 상황이니 마찬가지로 조회 시 걸러준다
+            if(!post.isIspublic() || post.getDays().size()==0) continue;
+            //찜받은 갯수 확인
+//            int likeCnt=countLike(post.getPostId());
+            Long userId=userDetails.getUser().getId();
+            //로그인 유저가 찜한 것인지 여부 확인
+            post.setIslike(userLikeTrueOrNot(userId, post.getPostId()));
+            //게시물의 reviewCnt 계산
+            int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
+
+            ThemeAndSearchDto themeAndSearchDto =new ThemeAndSearchDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
+                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt, post.getTheme());
+            themeList.add(themeAndSearchDto);
+        }
+
+        int start=pageno*8;
+        int end=Math.min((start+8), themePostList.size());
+
+        return validator.overPageCheck2(themeList,start,end,pageable,pageno);
+    }
+
+    //게시물 상세조회
+    public Post showDetail(Long postId) {
+
+        return postRepository.findById(postId).orElseThrow(
+                ()->new IllegalArgumentException("해당 게시물이 없습니다")
+        );
+    }
+
+    //여행 게시물 삭제
+    public Long deletePost(UserDetailsImpl userDetails, Long postId) {
+        Post post=postRepository.findById(postId).orElseThrow(
+                ()->new IllegalArgumentException("해당 게시물이 없으므로 삭제할 수 없습니다")
+        );
+        if(post.getUser().getId()!=userDetails.getUser().getId()){
+            throw new IllegalArgumentException("게시물 작성자만 삭제가 가능합니다");
+        }
+        postRepository.deleteById(postId);
+        return postId;
+    }
+
+
+
+    //검색결과 조회
+    public Page<ThemeAndSearchDto> showSearchPosts(int pageno, String keyword, UserDetailsImpl userDetails) {
+        String postTitle=keyword;
+        String location=keyword;
+        String theme=keyword;
+
+        List<Post> postList=postRepository.findByPostTitleContainingOrLocationContainingOrThemeContainingOrderByModifiedAtDesc(
+                postTitle,location,theme
+        );
+        List<ThemeAndSearchDto> searchList=new ArrayList<>();
+
+        Pageable pageable= getPageableList(pageno);
+
+
+        for(int i=0;i<postList.size();i++){
+            Post post=postList.get(i);
+            //나만보기 상태이면 추가 안함(jpa로 조건 걸 수 있으나 db에 너무 많은 작업이 가는 것 같아서 자바단에서 실행)
+            if(!post.isIspublic() || post.getDays().size()==0) continue;
+            //찜받은 갯수 확인
+//            int likeCnt=countLike(post.getPostId());
+            Long userId=userDetails.getUser().getId();
+            //로그인 유저가 찜한 것인지 여부 확인
+            post.setIslike(userLikeTrueOrNot(userId, post.getPostId()));
+            //게시물의 reviewCnt 계산
+            int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
+
+            ThemeAndSearchDto themeAndSearchDto =new ThemeAndSearchDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
+                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt, post.getTheme());
+            searchList.add(themeAndSearchDto);
+        }
+
+        int start=pageno*8;
+        int end=Math.min((start+8), postList.size());
+
+        return validator.overPageCheck2(searchList,start,end,pageable,pageno);
+    }
+
 }
 

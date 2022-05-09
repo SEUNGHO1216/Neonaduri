@@ -3,6 +3,7 @@ package com.sparta.neonaduri_back.repository;
 import com.sparta.neonaduri_back.model.Post;
 import com.sparta.neonaduri_back.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,13 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     //방 생선한 사람이 저장하는게 아니면 예외처리
     Optional<Post> findByUserAndPostId(User user, Long postId);
 
-    //지역'만'으로 찾기
+    //지역별 검색
     List<Post> findAllByLocationOrderByLikeCntDesc(String location);
+
+    //지역별 검색
+    List<Post> findAllByThemeOrderByLikeCntDesc(String theme);
+
+    //검색 결과
+    @Query("Select p from Post p where p.postTitle like %:postTitle% or p.location like %:location% or p.theme like %:theme% order by p.modifiedAt desc")
+    List<Post> findByPostTitleContainingOrLocationContainingOrThemeContainingOrderByModifiedAtDesc(String postTitle, String location, String theme);
 }
