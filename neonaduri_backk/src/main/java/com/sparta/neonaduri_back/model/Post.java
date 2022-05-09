@@ -47,13 +47,16 @@ public class Post extends Timestamped{
     private boolean islike;
 
     @Column(nullable = true)
+    private int likeCnt;
+
+    @Column(nullable = true)
     private boolean ispublic;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "days")
     private List<Days> days = new ArrayList<>();
 
@@ -72,6 +75,11 @@ public class Post extends Timestamped{
         this.postImgUrl="https://pixabay.com/get/g1bf8a51b53e3fddd3c2f2e7f37e49644332fb22979777a43c91474aba52ec9eb7b21bad2cf9c6f77489b1c15debfd447a1ab91f619a20da8d9d339abe6e3e7ab0885aedacaecea6d04ace1892ac6b43c_640.jpg";
         this.ispublic=postRequestDto.isIspublic();
         this.days=daysList;
+    }
+
+    //likeCnt 정보 수정
+    public void updateLikeCnt(int likeCnt){
+        this.likeCnt=likeCnt;
     }
 
 }
