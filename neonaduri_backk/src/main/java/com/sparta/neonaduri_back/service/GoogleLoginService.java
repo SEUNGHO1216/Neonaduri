@@ -88,7 +88,8 @@ public class GoogleLoginService {
         body.add("client_id" , "68742741278-1598oqkkoch3q3g0oaudc2lahovbsc64.apps.googleusercontent.com"); // 리액트
         body.add("client_secret", "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");  // 리액트
         body.add("code", code);
-        body.add("redirect_uri", "http://localhost:3000/user/google/callback");
+//        body.add("redirect_uri", "http://localhost:3000/user/google/callback"); // 리액트
+        body.add("redirect_uri", "http://neonaduri.com/user/google/callback"); // 리액트
         body.add("grant_type", "authorization_code");
 
         // POST 요청 보내기
@@ -160,22 +161,19 @@ public class GoogleLoginService {
         String password = passwordEncoder.encode(UUID.randomUUID().toString());
         String profileImgUrl = googleUserInfo.getProfileImgUrl();
 
-        int totalLike = 0;
-
         // DB에서 userName으로 가져오기 없으면 회원가입
-        User findUser = userRepository.findByUserName(userName).orElse(null);
-        if (findUser == null) {
-            findUser = User.builder()
+        User googoleUser = userRepository.findByUserName(userName).orElse(null);
+        if (googoleUser == null) {
+            googoleUser = User.builder()
                     .userName(userName)
                     .nickName(nickName)
                     .password(password)
                     .profileImgUrl(profileImgUrl)
-                    .totalLike(totalLike)
                     .build();
-            System.out.println("구글 서비스에서 회원가입할 때 보내는" + "userName " + userName + "nickName " + nickName + profileImgUrl + totalLike);
-            userRepository.save(findUser);
+            System.out.println("구글 서비스에서 회원가입할 때 보내는" + "userName " + userName + "nickName " + nickName + profileImgUrl);
+            userRepository.save(googoleUser);
         }
-        return findUser;
+        return googoleUser;
     }
 
     // 4. 시큐리티 강제 로그인

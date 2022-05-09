@@ -28,4 +28,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     //검색 결과
     @Query("Select p from Post p where p.postTitle like %:postTitle% or p.location like %:location% or p.theme like %:theme% order by p.modifiedAt desc")
     List<Post> findByPostTitleContainingOrLocationContainingOrThemeContainingOrderByModifiedAtDesc(String postTitle, String location, String theme);
+    // 상세 조회, 계획 저장 전 삭제
+    Optional<Post> findByPostId(Long postId);
+
+    List<Post> findAllByUser(User user);
 }

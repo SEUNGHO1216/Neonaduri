@@ -22,6 +22,7 @@ import com.sparta.neonaduri_back.security.provider.FormLoginAuthProvider;
 import com.sparta.neonaduri_back.security.provider.JWTAuthProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -104,10 +105,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.authorizeRequests()
+                .mvcMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Preflight Request 허용해주기
                 .anyRequest()
                 .permitAll()
                 .and()
-
                 // [로그아웃 기능]
                 .logout()
                 // 로그아웃 요청 처리 URL
@@ -194,8 +195,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     //cors 해결
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
-//        corsConfiguration.addAllowedOrigin(""); //배포시
+//        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // local 테스트 시
+//        corsConfiguration.addAllowedOrigin("http://neonaduri.com"); //배포시
+        corsConfiguration.addAllowedOrigin("https://neonaduri.com"); //배포시
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addExposedHeader("Authorization");

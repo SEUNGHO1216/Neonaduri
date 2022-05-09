@@ -11,7 +11,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
@@ -60,7 +59,6 @@ public class Post extends Timestamped{
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "days")
     private List<Days> days = new ArrayList<>();
-
 
     //방 만들어줄 때 생성자
     public Post(RoomMakeRequestDto roomMakeRequestDto, User user){

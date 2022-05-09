@@ -11,6 +11,7 @@ package com.sparta.neonaduri_back.model;
  *   수정일     수정자             수정내용
  *  --------   --------    ---------------------------
  *  2022.05.03 오예령       회원 정보에 profileImgUrl, totalLike 추가
+ *  2022.05.07 오예령       카카오, 구글 소셜 로그인 수정
  */
 
 import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
@@ -49,27 +50,6 @@ public class User {
     @Column(nullable = true)
     private String profileImgUrl;
 
-    @Column(nullable = true)
-    private int totalLike;
-
-    // 카카오 회원가입
-    public User(String userName, String nickName, String password, String profileImgUrl) {
-        this.userName = userName;
-        this.nickName = nickName;
-        this.password = password;
-        this.profileImgUrl = profileImgUrl;
-    }
-
-    // 구글 회원가입
-    @Builder
-    public User(String userName, String nickName, String password, String profileImgUrl, int totalLike) {
-        this.userName = userName;
-        this.nickName = nickName;
-        this.password = password;
-        this.profileImgUrl = profileImgUrl;
-        this.totalLike = totalLike;
-    }
-
     // 회원가입
     public User(String userName, String password, SignupRequestDto signupRequestDto) {
         this.userName = userName;
@@ -77,6 +57,16 @@ public class User {
         this.nickName = signupRequestDto.getNickName();
         this.profileImgUrl = "https://seunghodev-bucket.s3.ap-northeast-2.amazonaws.com/%EA%B0%9C%ED%97%88%ED%83%88.jpg";
     }
+
+    // 카카오 회원가입 + 구글 회원가입
+    @Builder
+    public User(String userName, String nickName, String password, String profileImgUrl) {
+        this.userName = userName;
+        this.nickName = nickName;
+        this.password = password;
+        this.profileImgUrl = profileImgUrl;
+    }
+
 
     //회원 프로필 업데이트
     public void update(String profileImgUrl, String nickName){

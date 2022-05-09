@@ -3,8 +3,9 @@ package com.sparta.neonaduri_back.repository;
 import com.sparta.neonaduri_back.model.Review;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ReviewRepository extends JpaRepository<Review, Long> {
+import java.util.List;
 
-    //게시물의 총 리뷰개수 구하기
-    Long countByPostId(Long postId);
+public interface ReviewRepository extends JpaRepository<Review, Long> {
+    // postId로 해당 게시물의 후기 list 가져오기
+    List<Review> findAllByPostId(Long postId);
 }
