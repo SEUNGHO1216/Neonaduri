@@ -299,7 +299,7 @@ public class PostService {
         }
 
         int start=pageno*8;
-        int end=Math.min((start+8), postList.size());
+        int end=Math.min((start+8), searchList.size());
 
         return validator.overPageCheck2(searchList,start,end,pageable,pageno);
     }
