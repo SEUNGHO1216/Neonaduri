@@ -1,6 +1,6 @@
 package com.sparta.neonaduri_back.controller;
 
-import com.sparta.neonaduri_back.dto.LikeResponseDto;
+import com.sparta.neonaduri_back.dto.like.LikeResponseDto;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.service.LikeService;

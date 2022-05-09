@@ -1,4 +1,4 @@
-package com.sparta.neonaduri_back.dto;
+package com.sparta.neonaduri_back.dto.like;
 
 
 import lombok.Getter;

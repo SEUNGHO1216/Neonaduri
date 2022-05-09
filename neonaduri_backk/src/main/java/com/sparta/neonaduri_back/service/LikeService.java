@@ -1,9 +1,11 @@
 package com.sparta.neonaduri_back.service;
 
-import com.sparta.neonaduri_back.dto.LikeResponseDto;
+import com.sparta.neonaduri_back.dto.like.LikeResponseDto;
 import com.sparta.neonaduri_back.model.Likes;
+import com.sparta.neonaduri_back.model.Post;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.repository.LikeRepository;
+import com.sparta.neonaduri_back.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class LikeService {
 
     private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
 
     @Transactional
     public LikeResponseDto toggle(Long postId, User user) {
@@ -30,10 +33,20 @@ public class LikeService {
             likeResponseDto.setLike(false);
         }else{
         //아직 찜 안 한 경우
+            //
             Likes likes=new Likes(userId, postId);
             likeRepository.save(likes);
             likeResponseDto.setLike(true);
         }
+
+        //찜 누르고 취소하는 동시에 게시물 likeCnt 개수도 변화
+        //게시물의 찜개수 세기 (likeCnt)
+        int likeCnt=likeRepository.countByPostId(postId).intValue();
+        Post post=postRepository.findById(postId).orElseThrow(
+                ()->new IllegalArgumentException("해당 게시물이 없습니다")
+        );
+        post.updateLikeCnt(likeCnt);
+        postRepository.save(post);
         return likeResponseDto;
     }
 }

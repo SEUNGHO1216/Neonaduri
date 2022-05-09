@@ -9,15 +9,11 @@ import com.sparta.neonaduri_back.utils.StatusEnum;
 import com.sparta.neonaduri_back.utils.StatusMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -58,7 +54,7 @@ public class PostController {
 
     //내가 찜한 여행목록 조회
     @GetMapping("/api/user/mypage/like/{pageno}")
-    public MyLikeResponseDto showMyLike(@PathVariable("pageno") int pageno, @AuthenticationPrincipal UserDetailsImpl userDetails){
+    public MyLikePagingDto showMyLike(@PathVariable("pageno") int pageno, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         //MyLikePostDto
         Page<MyLikePostDto> postList=postService.showMyLike(pageno-1,userDetails);
@@ -72,8 +68,87 @@ public class PostController {
             islastPage=true;
         }
         System.out.println(postList.getNumber()+1);
-        MyLikeResponseDto myLikeResponseDto = new MyLikeResponseDto(totalLike, postList, islastPage);
-        return myLikeResponseDto;
+        MyLikePagingDto myLikePagingDto = new MyLikePagingDto(totalLike, postList, islastPage);
+        return myLikePagingDto;
+    }
+
+    //인기 게시물 4개 조회
+    @GetMapping("/api/planning/best")
+    public List<BestAndLocationDto> showBestPosts(@AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return postService.showBestPosts(userDetails);
+    }
+
+    //지역별 조회(8개)
+    @GetMapping("/api/planning/location/{location}/{pageno}")
+    public BestAndLocationPagingDto showLocationPosts(@PathVariable("location") String location,@PathVariable("pageno") int pageno,
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        //BestAndLocationDto
+        Page<BestAndLocationDto> postList=postService.showLocationPosts(location,pageno-1,userDetails);
+
+        //islastPage
+        boolean islastPage=false;
+        if(postList.getTotalPages()==postList.getNumber()+1){
+            islastPage=true;
+        }
+        BestAndLocationPagingDto bestAndLocationPagingDto=new BestAndLocationPagingDto(postList,islastPage);
+        return  bestAndLocationPagingDto;
+    }
+
+    //테마별 조회
+    @GetMapping("/api/planning/theme/{theme}/{pageno}")
+    public ThemeAndSearchPagingDto showThemePosts(@PathVariable("theme") String theme, @PathVariable("pageno") int pageno,
+                                                  @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Page<ThemeAndSearchDto> postList=postService.showThemePosts(theme,pageno-1,userDetails);
+
+        //islastPage
+        boolean islastPage=false;
+        if(postList.getTotalPages()==postList.getNumber()+1){
+            islastPage=true;
+        }
+        ThemeAndSearchPagingDto themeAndSearchPagingDto=new ThemeAndSearchPagingDto(postList, islastPage);
+        return themeAndSearchPagingDto;
+    }
+
+    //상세조회
+    @GetMapping("/api/detail/{postId}")
+    public Post showDetail(@PathVariable("postId") Long postId){
+        return postService.showDetail(postId);
+    }
+
+    //내가 등록한 여행 계획 삭제
+    @DeleteMapping("/api/user/delplan/{postId}")
+    public ResponseEntity<StatusMessage> deletePost(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                    @PathVariable("postId") Long postId){
+        Long deletedPostId=postService.deletePost(userDetails, postId);
+        if(postId==deletedPostId){
+            StatusMessage statusMessage=new StatusMessage();
+            statusMessage.setStatus(StatusEnum.OK);
+            statusMessage.setData("삭제가 정상적으로 완료됨");
+            return new ResponseEntity<StatusMessage>(statusMessage,HttpStatus.OK);
+        }else{
+            StatusMessage statusMessage=new StatusMessage();
+            statusMessage.setStatus(StatusEnum.BAD_REQUEST);
+            statusMessage.setData("삭제 실패");
+            return new ResponseEntity<StatusMessage>(statusMessage, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    //검색 결과 조회
+    @GetMapping("/api/search/{keyword}/{pageno}")
+    public ThemeAndSearchPagingDto showSearchPosts(@PathVariable("pageno") int pageno, @PathVariable("keyword") String keyword,
+                                                   @AuthenticationPrincipal UserDetailsImpl userDetails){
+        System.out.println("키워드:"+keyword);
+        Page<ThemeAndSearchDto> postList=postService.showSearchPosts(pageno-1, keyword, userDetails);
+
+        //islastPage
+        boolean islastPage=false;
+        if(postList.getTotalPages()==postList.getNumber()+1){
+            islastPage=true;
+        }
+        ThemeAndSearchPagingDto themeAndSearchPagingDto=new ThemeAndSearchPagingDto(postList, islastPage);
+        return themeAndSearchPagingDto;
     }
 
     //플랜 저장 안함.(새로고침 뒤로가기)
@@ -105,16 +180,4 @@ public class PostController {
         return postList;
     }
 
-    // 내가 작성한 플랜 삭제
-    @DeleteMapping("/api/user/delplan/{postId}")
-    public ResponseEntity<String> deletePost(@PathVariable Long postId,
-                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        return postService.deletePlan(postId, userDetails);
-    }
-
-    // 플랜 상세 조회
-    @GetMapping("/api/detail/{postId}")
-    public PostListDto detailPlan(@PathVariable Long postId) {
-        return postService.detailPlan(postId);
-    }
 }

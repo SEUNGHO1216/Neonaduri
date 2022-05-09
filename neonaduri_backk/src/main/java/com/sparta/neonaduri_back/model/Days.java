@@ -23,7 +23,7 @@ public class Days {
 //    @JoinColumn(name = "POST_ID")
 //    private Post post;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "places")
     private List<Places> places = new ArrayList<>();
 

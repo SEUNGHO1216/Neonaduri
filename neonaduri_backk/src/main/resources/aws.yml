@@ -1,0 +1,22 @@
+cloud:
+  aws:
+    credentials:
+      accessKey: AKIAVWP6DUJ2LJ75CYWH
+      secretKey: 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
+    s3:
+      bucket: seunghodev-bucket
+    region:
+      static: ap-northeast-2
+    stack:
+      auto: false
+
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 230381204395-ma19d0a9gn8putfail4k256v7pf16rug.apps.googleusercontent.com
+            client-secret: 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
+            scope: profile,email,openid
