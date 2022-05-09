@@ -17,6 +17,6 @@ public class PlaceRequestDto {
     private String address;
     private String roadAddress;
     private String placeMemo;
-    private Long lat;
-    private Long lng;
+    private String lat;
+    private String lng;
 }

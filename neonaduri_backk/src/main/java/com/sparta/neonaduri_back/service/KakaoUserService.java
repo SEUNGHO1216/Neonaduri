@@ -89,7 +89,8 @@ public class KakaoUserService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("client_id", ""); // 리액트
-        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback"); // 리액트
+//        body.add("redirect_uri", "http://localhost:3000/user/kakao/callback"); // 리액트
+        body.add("redirect_uri", "http://neonaduri.com/user/kakao/callback"); // 리액트
         body.add("code", code);
 
         // HTTP 요청 보내기
@@ -143,11 +144,9 @@ public class KakaoUserService {
 
         String profileImgUrl = String.valueOf(jsonNode.get("kakao_account").get("profile").get("profile_image_url"));
 
-        int totalLike = 0;
+        System.out.println("카카오 토큰에 있는" + "" + kakaouserName + ""+ userName + "" + nickName +  "" + profileImgUrl);
 
-        System.out.println("카카오 토큰에 있는" + "" + kakaouserName + ""+ userName + "" + nickName +  "" + profileImgUrl + "" + totalLike);
-
-        return new SocialLoginInfoDto(userName, nickName, profileImgUrl, totalLike);
+        return new SocialLoginInfoDto(userName, nickName, profileImgUrl);
 
     }
 
@@ -155,7 +154,7 @@ public class KakaoUserService {
     private User registerKakaoUserIfNeed (SocialLoginInfoDto kakaoUserInfo) {
         // DB 에 중복된 Kakao Id 가 있는지 확인
         String userName =kakaoUserInfo.getUserName();
-        System.out.println(userName);
+
         User kakaoUser = userRepository.findByUserName(userName)
                 .orElse(null);
 

@@ -1,9 +1,7 @@
 package com.sparta.neonaduri_back.controller;
 
-import com.sparta.neonaduri_back.dto.post.MyLikePostDto;
-import com.sparta.neonaduri_back.dto.post.MyLikeResponseDto;
-import com.sparta.neonaduri_back.dto.post.PostRequestDto;
-import com.sparta.neonaduri_back.dto.post.RoomMakeRequestDto;
+import com.sparta.neonaduri_back.dto.post.*;
+import com.sparta.neonaduri_back.model.Post;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.service.PostService;
@@ -11,10 +9,16 @@ import com.sparta.neonaduri_back.utils.StatusEnum;
 import com.sparta.neonaduri_back.utils.StatusMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -54,7 +58,7 @@ public class PostController {
 
     //내가 찜한 여행목록 조회
     @GetMapping("/api/user/mypage/like/{pageno}")
-    public MyLikeResponseDto showMyLike(@PathVariable("pageno") int pageno,@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public MyLikeResponseDto showMyLike(@PathVariable("pageno") int pageno, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
         //MyLikePostDto
         Page<MyLikePostDto> postList=postService.showMyLike(pageno-1,userDetails);
@@ -72,4 +76,45 @@ public class PostController {
         return myLikeResponseDto;
     }
 
+    //플랜 저장 안함.(새로고침 뒤로가기)
+    @DeleteMapping("/api/makeplan/{postId}")
+    public ResponseEntity<String> leavePost(@PathVariable Long postId,
+                                            @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userDetails.getUser();
+        return postService.leavePost(postId, user);
+    }
+
+    //플랜 계획 조회하기
+    @GetMapping("/api/makeplan/{postId}")
+    public RoomMakeRequestDto getPost(@PathVariable Long postId) {
+        return postService.getPost(postId);
+    }
+
+    //내가 작성한 플랜조회
+    @GetMapping("/api/user/getplan/{pageno}")
+    public PostResponseDto getMyPost(@PathVariable("pageno") int pageno,
+                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
+
+        Page<PostListDto> myplanList = postService.getMyPosts(pageno-1,userDetails);
+
+        boolean islastPage = false;
+        if ( myplanList.getTotalPages() == myplanList.getNumber()+1){
+            islastPage=true;
+        }
+        PostResponseDto postList = new PostResponseDto(myplanList, islastPage);
+        return postList;
+    }
+
+    // 내가 작성한 플랜 삭제
+    @DeleteMapping("/api/user/delplan/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable Long postId,
+                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        return postService.deletePlan(postId, userDetails);
+    }
+
+    // 플랜 상세 조회
+    @GetMapping("/api/detail/{postId}")
+    public PostListDto detailPlan(@PathVariable Long postId) {
+        return postService.detailPlan(postId);
+    }
 }

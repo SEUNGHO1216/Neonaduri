@@ -17,7 +17,7 @@ public class Places {
     @Column(nullable = false)
     private String placeName;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String placeInfoUrl;
 
     @Column(nullable = false)
@@ -33,10 +33,10 @@ public class Places {
     private String placeMemo;
 
     @Column(nullable = false)
-    private Long lat;
+    private String lat;
 
     @Column(nullable = false)
-    private Long lng;
+    private String lng;
 
 //    @ManyToOne
 //    @JoinColumn(name = "DAYS_ID")

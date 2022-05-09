@@ -27,7 +27,7 @@ public class Review extends Timestamped{
     private Long id;
 
     @Column(nullable = false)
-    private String reviewContent;
+    private String reviewContents;
 
     @Column(nullable = true)
     private String reviewImgUrl;
@@ -36,11 +36,15 @@ public class Review extends Timestamped{
     @JoinColumn(name = "user_Id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "post_Id")
-    private Post post;
-//
-//    @Column
-//    private Long postId;
+    @Column(nullable = false)
+    private Long postId;
+
+    // 후기 등록
+    public Review(String reviewContents, String reviewImgUrl, User user, Long postId) {
+        this.reviewContents = reviewContents;
+        this.reviewImgUrl = reviewImgUrl;
+        this.user = user;
+        this.postId = postId;
+    }
 
 }
