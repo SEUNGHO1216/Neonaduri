@@ -85,7 +85,7 @@ public class UserController {
     // 유저 정보 확인
     @GetMapping("/api/islogin")
     private ResponseEntity<IsLoginDto> isloginChk(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        userInfoValidator.isloginCheck(userDetails);
+//        userInfoValidator.isloginCheck(userDetails);
         return new ResponseEntity<>(userInfoValidator.isloginCheck(userDetails), HttpStatus.OK);
     }
 

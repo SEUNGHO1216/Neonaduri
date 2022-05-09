@@ -17,6 +17,7 @@ package com.sparta.neonaduri_back.validator;
 
 import com.sparta.neonaduri_back.dto.post.MyLikePostDto;
 import com.sparta.neonaduri_back.dto.post.PostListDto;
+import com.sparta.neonaduri_back.dto.review.ReviewListDto;
 import com.sparta.neonaduri_back.dto.user.IsLoginDto;
 import com.sparta.neonaduri_back.dto.user.SignupRequestDto;
 import com.sparta.neonaduri_back.model.Post;
@@ -114,4 +115,12 @@ public class UserInfoValidator {
         }
     }
 
+    public Page<ReviewListDto> overPages3(List<ReviewListDto> reviewList, int start, int end, Pageable pageable, int pageno) {
+        Page<ReviewListDto> pages = new PageImpl<>(reviewList.subList(start, end), pageable, (long)reviewList.size());
+        if (pageno > pages.getTotalPages()) {
+            throw new IllegalArgumentException("요청할 수 없는 페이지입니다.");
+        } else {
+            return pages;
+        }
+    }
 }

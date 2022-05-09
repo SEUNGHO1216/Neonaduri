@@ -84,7 +84,6 @@ public class PostController {
         return postService.leavePost(postId, user);
     }
 
-
     //플랜 계획 조회하기
     @GetMapping("/api/makeplan/{postId}")
     public RoomMakeRequestDto getPost(@PathVariable Long postId) {

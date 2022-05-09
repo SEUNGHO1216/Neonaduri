@@ -1,12 +1,22 @@
-//package com.sparta.neonaduri_back.dto.review;
-//
-//import com.sparta.neonaduri_back.model.Review;
-//
-//import java.util.List;
-//
-//public class ReviewResponseDto {
-//    private List<Review> reviewList;
-//    private Long totalPage;
-//    private
-//
-//}
+package com.sparta.neonaduri_back.dto.review;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
+
+import java.util.List;
+
+@NoArgsConstructor
+@Getter
+public class ReviewResponseDto {
+    private List<ReviewListDto> reviewList;
+    private int totalPage;
+    boolean islastPage;
+
+    public ReviewResponseDto(Page<ReviewListDto> reviewList, boolean islastPage) {
+        this.reviewList = reviewList.getContent();
+        this.totalPage = reviewList.getTotalPages();
+        this.islastPage = islastPage;
+
+    }
+}
