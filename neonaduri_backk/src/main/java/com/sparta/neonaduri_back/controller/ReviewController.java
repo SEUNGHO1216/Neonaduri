@@ -13,9 +13,11 @@ package com.sparta.neonaduri_back.controller;
  *
  */
 
+import com.sparta.neonaduri_back.dto.review.MyReviewListDto;
 import com.sparta.neonaduri_back.dto.review.ReviewListDto;
 import com.sparta.neonaduri_back.dto.review.ReviewRequestDto;
 import com.sparta.neonaduri_back.dto.review.ReviewResponseDto;
+import com.sparta.neonaduri_back.model.Review;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.service.ReviewService;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @AllArgsConstructor
 @RequestMapping("/api/detail/reviews")
@@ -39,16 +42,20 @@ public class ReviewController {
 
     // 후기 등록
     @PostMapping("/{postId}")
-    public ResponseEntity<String> createReview(@PathVariable Long postId,
-                                               @RequestParam("reviewContents") String reviewContetns,
-                                               @RequestParam(value = "reviewImgUrl")MultipartFile multipartFile,
+    public ResponseEntity<String> createReview(@PathVariable("postId") Long postId,
+                                               @RequestParam(value = "reviewContents") String reviewContetns,
+                                               @RequestParam(value = "reviewImgFile")MultipartFile multipartFile,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
 
-        String reviewImgUrl = S3Uploader.upload(multipartFile, "static");
 
-        ReviewRequestDto reviewRequestDto = new ReviewRequestDto(reviewContetns, reviewImgUrl);
-        reviewService.createReview(postId, reviewRequestDto, userDetails.getUser());
+        if(multipartFile.isEmpty()){
+            reviewService.createReviewOnlyContents(postId, reviewContetns, userDetails.getUser());
+        }else{
+            String reviewImgUrl = S3Uploader.upload(multipartFile, "static");
+            ReviewRequestDto reviewRequestDto = new ReviewRequestDto(reviewContetns, reviewImgUrl);
+            reviewService.createReview(postId, reviewRequestDto, userDetails.getUser());
+        }
         return ResponseEntity.status(201)
                 .body("201");
     }
@@ -68,4 +75,43 @@ public class ReviewController {
         return ResponseEntity.status(201)
                 .body(reviewResponseDto);
     }
+
+    //후기 수정
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<String> updateReviews(@PathVariable("reviewId") Long reviewId,
+                                                @RequestParam("reviewImgUrl") String reviewImgUrl,
+                                                @RequestParam("reviewImgFile") MultipartFile multipartFile,
+                                                @RequestParam("reviewContents") String reviewContents,
+                                                @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+        //파일을 보내지 않은 경우 -> url만 보냈거나, url도 보내지 않은 경우
+        if(multipartFile.isEmpty()){
+            reviewService.updateReview(reviewId,reviewImgUrl,reviewContents,userDetails);
+        }else{
+            System.out.println(reviewContents);
+            reviewService.updateReviewWithFile(reviewId, multipartFile, reviewContents, userDetails);
+        }
+        return ResponseEntity.ok("수정 완료 201");
+    }
+
+    //후기 수정 전 다시 조회
+    @GetMapping("/edit/{reviewId}")
+    public ResponseEntity<ReviewListDto> getReviewAgain(@PathVariable("reviewId") Long reviewId,
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails){
+        ReviewListDto reviewListDto=reviewService.getReviewAgain(reviewId, userDetails);
+
+        return ResponseEntity.status(201).body(reviewListDto);
+    }
+
+    //후기 삭제
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<String> deleteReview(@PathVariable("reviewId") Long reviewId,
+                                               @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Long deletedId=reviewService.deleteReview(reviewId,userDetails);
+        if(reviewId==deletedId){
+            return ResponseEntity.status(200).body("200");
+        }else{
+            return  ResponseEntity.status(400).body("400");
+        }
+    }
+
 }

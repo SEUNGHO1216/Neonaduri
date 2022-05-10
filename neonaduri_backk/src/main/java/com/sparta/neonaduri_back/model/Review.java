@@ -39,12 +39,24 @@ public class Review extends Timestamped{
     @Column(nullable = false)
     private Long postId;
 
-    // 후기 등록
+    // 후기 등록(사진도 같이등록했을 시)
     public Review(String reviewContents, String reviewImgUrl, User user, Long postId) {
         this.reviewContents = reviewContents;
         this.reviewImgUrl = reviewImgUrl;
         this.user = user;
         this.postId = postId;
+    }
+    // 후기 등록(내용만 등록 시)
+    public Review(String reviewContents, User user, Long postId){
+        this.reviewContents=reviewContents;
+        this.user=user;
+        this.postId=postId;
+    }
+
+    //후기 수정
+    public void update(String reviewContents,String reviewImgUrl){
+        this.reviewContents=reviewContents;
+        this.reviewImgUrl=reviewImgUrl;
     }
 
 }

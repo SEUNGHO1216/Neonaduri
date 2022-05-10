@@ -4,7 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-applicaition.properties
+application.properties
 aws.yml
 ### STS ###
 .apt_generated

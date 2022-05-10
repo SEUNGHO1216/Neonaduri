@@ -5,7 +5,6 @@ import com.sparta.neonaduri_back.model.*;
 import com.sparta.neonaduri_back.repository.*;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.validator.UserInfoValidator;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +17,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Objects;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -30,6 +29,7 @@ public class PostService {
     private final PlacesRepository placesRepository;
     private final LikeRepository likeRepository;
     private final ReviewRepository reviewRepository;
+//    private final ImageRepository imageRepository;
     private final UserInfoValidator validator;
 
     //방 만들기
@@ -87,23 +87,25 @@ public class PostService {
         List<Likes> likesList=likeRepository.findAllByUserIdOrderByModifiedAtDesc(userDetails.getUser().getId());
         Pageable pageable= getPageable(pageno);
 
-        if(likesList.size()==0){
-            throw new IllegalArgumentException("찜한 게시물이 없습니다");
-        }else{
-            //리팩토링 필요
-            for(Likes likes:likesList){
-                Post post=postRepository.findById(likes.getPostId()).orElseThrow(
-                        ()-> new IllegalArgumentException("해당 게시물이 없습니다")
-                );
+        //리팩토링 필요
+        for(Likes likes:likesList){
+            Optional<Post> postOptional=postRepository.findById(likes.getPostId());
+
+
+            //찜한 게시물이 존재할 경우
+            if(postOptional.isPresent()){
                 //찜한 게시물이니 true값 입력
+                Post post=postOptional.get();
                 boolean islike=true;
 //                int likeCnt=countLike(post.getPostId());
                 MyLikePostDto myLikePostDto=new MyLikePostDto(post.getPostId(), post.getPostImgUrl()
-                ,post.getPostTitle(),post.getLocation(),post.getStartDate(),
+                        ,post.getPostTitle(),post.getLocation(),post.getStartDate(),
                         post.getEndDate(),islike, post.getLikeCnt(),post.getTheme());
                 postList.add(myLikePostDto);
             }
+
         }
+
         int start = pageno * 6;
         int end = Math.min((start + 6), postList.size());
 
@@ -261,6 +263,8 @@ public class PostService {
         if(post.getUser().getId()!=userDetails.getUser().getId()){
             throw new IllegalArgumentException("게시물 작성자만 삭제가 가능합니다");
         }
+        reviewRepository.deleteAllByPostId(postId);
+        likeRepository.deleteAllByPostId(postId);
         postRepository.deleteById(postId);
         return postId;
     }
@@ -299,7 +303,7 @@ public class PostService {
         }
 
         int start=pageno*8;
-        int end=Math.min((start+8), postList.size());
+        int end=Math.min((start+8), searchList.size());
 
         return validator.overPageCheck2(searchList,start,end,pageable,pageno);
     }

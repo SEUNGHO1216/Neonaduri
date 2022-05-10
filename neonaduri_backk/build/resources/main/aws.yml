@@ -1,8 +1,8 @@
 cloud:
   aws:
     credentials:
-      accessKey: AKIAVWP6DUJ2LJ75CYWH
-      secretKey: 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
+      accessKey: AKIAVWP6DUJ2OAZIIA4Y
+      secretKey: 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
     s3:
       bucket: seunghodev-bucket
     region:

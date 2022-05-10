@@ -12,6 +12,9 @@ public interface LikeRepository extends JpaRepository<Likes, Long> {
 
     void deleteByPostIdAndUserId(Long postId, Long userId);
 
+    //게시물 삭제시 해당 게시물 찜한 유저에게서도 삭제돼야함
+    void deleteAllByPostId(Long postId);
+
     Long countByPostId(Long postId);
 
     List<Likes> findAllByUserIdOrderByModifiedAtDesc(Long userId);

@@ -1,10 +1,12 @@
 package com.sparta.neonaduri_back.controller;
 
 import com.sparta.neonaduri_back.dto.post.*;
+import com.sparta.neonaduri_back.dto.review.MyReviewListDto;
 import com.sparta.neonaduri_back.model.Post;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.service.PostService;
+import com.sparta.neonaduri_back.service.ReviewService;
 import com.sparta.neonaduri_back.utils.StatusEnum;
 import com.sparta.neonaduri_back.utils.StatusMessage;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final ReviewService reviewService;
 
     //방 만들어주기
     @PostMapping("/api/makeplan")
@@ -178,6 +181,12 @@ public class PostController {
         }
         PostResponseDto postList = new PostResponseDto(myplanList, islastPage);
         return postList;
+    }
+
+    // 내가 쓴 후기 조회
+    @GetMapping("/api/user/mypage/review")
+    public List<MyReviewListDto> showMyReviews(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        return reviewService.showMyReviews(userDetails);
     }
 
 }

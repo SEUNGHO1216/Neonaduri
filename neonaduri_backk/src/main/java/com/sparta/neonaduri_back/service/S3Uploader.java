@@ -5,8 +5,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.sparta.neonaduri_back.model.Image;
+import com.sparta.neonaduri_back.model.Review;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.repository.ImageRepository;
+import com.sparta.neonaduri_back.repository.ReviewRepository;
 import com.sparta.neonaduri_back.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,8 @@ public class S3Uploader {
     private final AmazonS3Client amazonS3Client;
 
     private final UserRepository userRepository;
+
+    private final ReviewRepository reviewRepository;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
@@ -57,6 +61,7 @@ public class S3Uploader {
         return uploadImageUrl;
     }
 
+    //------------------------  유저프로필 수정 --------------------------
 
     //게시글 수정 (이미지 파일 변환)
     public String updateImage(MultipartFile multipartFile, String dirName, Long userId)throws IOException {
@@ -87,6 +92,45 @@ public class S3Uploader {
         }
         return upload(uploadFile, dirName);
     }
+
+    //------------------------- 후기이미지 수정  -----------------------------
+
+    //게시글 수정 (이미지 파일 변환)
+    public String updateReviewImage(MultipartFile multipartFile, String dirName, Long reviewId)throws IOException {
+        System.out.println("멀티파트파일유무:"+multipartFile);
+        File uploadFile = convert(multipartFile)
+                .orElseThrow(()->new IllegalArgumentException("error: MultipartFile -> File convert fail"));
+        return reviewImageUpdate(uploadFile, dirName, reviewId);
+    }
+
+    // 게시글 수정 (이미지 파일 교체)
+    private String reviewImageUpdate(File uploadFile, String dirName, Long reviewId) {
+        System.out.println("업로드파일유무:"+uploadFile);
+        Review review=reviewRepository.findById(reviewId).orElseThrow(
+                ()->new IllegalArgumentException("해당 리뷰가 없습니다")
+        );
+        String imageUrl=review.getReviewImgUrl();
+        System.out.println("image:"+imageUrl);
+        //기존에 사진 url이 없던 경우가 아니라면
+//        if(!(imageUrl==null || imageUrl.equals(""))){
+            Optional<Image> image = imageRepository.findByImageUrl(imageUrl);
+            System.out.println("이미지 실체:"+image);
+//            System.out.println("이미지 실체 네임:"+image.get().getFilename());
+            //디폴트 이미지여서 아직 image레포지토리에 url이 없는 경우 -> 업로드 시킴
+            if(!image.isPresent()){
+                return upload(uploadFile, dirName);
+            }else{
+                String fileName = image.get().getFilename();
+                System.out.println(fileName);
+                //버켓에 없는 파일네임을 지우라하면 에러가 날까? -> 난다..
+                amazonS3Client.deleteObject(new DeleteObjectRequest(bucket, fileName));
+                System.out.println("지우기성공?");
+                imageRepository.deleteByFilename(fileName);
+            }
+//        }
+        return upload(uploadFile, dirName);
+    }
+
 
     // S3로 업로드
     private String putS3(File uploadFile, String fileName) {
