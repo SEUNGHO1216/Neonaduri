@@ -1,5 +1,6 @@
 package com.sparta.neonaduri_back.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.neonaduri_back.dto.post.PostRequestDto;
 import com.sparta.neonaduri_back.dto.post.RoomMakeRequestDto;
 import lombok.AllArgsConstructor;
@@ -52,6 +53,7 @@ public class Post extends Timestamped{
     @Column(nullable = true)
     private boolean ispublic;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User user;

@@ -116,8 +116,12 @@ public class PostController {
 
     //상세조회
     @GetMapping("/api/detail/{postId}")
-    public Post showDetail(@PathVariable("postId") Long postId){
-        return postService.showDetail(postId);
+    public ResponseEntity<Object> showDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+        Post post=postService.showDetail(postId, userDetails);
+        if(post==null){
+            return ResponseEntity.status(200).body("비공개 게시물입니다");
+        }
+        return ResponseEntity.ok(post);
     }
 
     //내가 등록한 여행 계획 삭제

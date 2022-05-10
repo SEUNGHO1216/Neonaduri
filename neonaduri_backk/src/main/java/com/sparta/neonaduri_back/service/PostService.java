@@ -212,6 +212,13 @@ public class PostService {
         return PageRequest.of(pageno, 8, sort);
     }
 
+    //bestList, locationList 페이징
+    private Pageable getPageableList5(int pageno) {
+        Sort.Direction direction = Sort.Direction.DESC;
+        Sort sort = Sort.by(direction, "id");
+        return PageRequest.of(pageno, 5, sort);
+    }
+
     //테마별 검색조회(8개)
     public Page<ThemeAndSearchDto> showThemePosts(String theme, int pageno, UserDetailsImpl userDetails) {
 
@@ -248,11 +255,27 @@ public class PostService {
     }
 
     //게시물 상세조회
-    public Post showDetail(Long postId) {
+    public Post showDetail(Long postId, UserDetailsImpl userDetails) {
 
-        return postRepository.findById(postId).orElseThrow(
+        Post post=postRepository.findById(postId).orElseThrow(
                 ()->new IllegalArgumentException("해당 게시물이 없습니다")
         );
+        //전체공개이고
+        if(post.isIspublic()){
+
+            return postRepository.findById(postId).orElseThrow(
+                    ()->new IllegalArgumentException("해당 게시물이 없습니다")
+            );
+        }else{
+            //현재 유저가 작성자와 같으면
+            if(post.getUser().getId() == userDetails.getUser().getId()){
+                return postRepository.findById(postId).orElseThrow(
+                        ()->new IllegalArgumentException("해당 게시물이 없습니다")
+                );
+            }else{
+                return null;
+            }
+        }
     }
 
     //여행 게시물 삭제
@@ -318,27 +341,45 @@ public class PostService {
                 post.getEndDate(), post.getDateCnt(), post.getPostTitle(), post.getLocation(), post.getTheme());
         return roomMakeRequestDto;
     }
-
+//--------------------------------------------------------------------------------------
     // 내가 작성한 플랜조회
     public Page<PostListDto> getMyPosts(int pageno, UserDetailsImpl userDetails) {
 
         // 유저가 작성한 글 조회
         List<Post> posts = postRepository.findAllByUser(userDetails.getUser());
 
-        Pageable pageable = getPageableList(pageno);
+        Pageable pageable = getPageableList5(pageno);
 
         List<PostListDto> myplanList = new ArrayList<>();
 
+        Long userId=userDetails.getUser().getId();
+
         for (Post post : posts) {
-            if(!post.isIspublic() || post.getDays().size()==0) continue;
-            PostListDto postListDto = new PostListDto(post.getPostId(), post.getStartDate(), post.getEndDate(), post.getDateCnt(), post.getPostTitle(),
-                    post.getLocation(), post.getTheme());
+
+            post.setIslike(userLikeTrueOrNot(userId,post.getPostId()));
+            int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
+            if(post.getDays().size()==0) continue;
+            PostListDto postListDto = new PostListDto(post.getPostId(), post.getPostImgUrl(),
+                    post.getStartDate(), post.getEndDate(), post.getPostTitle(),
+                    post.getLocation(), post.getTheme(),post.isIslike(), post.isIspublic(),
+                    post.getLikeCnt(), reviewCnt);
             myplanList.add(postListDto);
 
         }
+        /* private Long postId;
+    private String postImgUrl;
+    private String startDate;
+    private String endDate;
+    private String postTitle;
+    private String location;
+    private String theme;
+    private boolean islike;
+    private boolean ispublic;
+    private int likeCnt;
+    private int reviewCnt;*/
 
-        int start = pageno * 8;
-        int end = Math.min((start + 8), myplanList.size());
+        int start = pageno * 5;
+        int end = Math.min((start + 5), myplanList.size());
 
         return validator.overPages2(myplanList, start, end, pageable, pageno);
     }
