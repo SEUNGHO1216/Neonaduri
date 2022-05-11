@@ -15,6 +15,7 @@ public class PostRequestDto {
     private String endDate;
     private String dateCnt;
     private String postTitle;
+    private String postImgUrl;
     private String location;
     private boolean ispublic;
     private String theme;

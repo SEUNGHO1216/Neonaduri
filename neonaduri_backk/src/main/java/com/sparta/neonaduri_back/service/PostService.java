@@ -4,6 +4,7 @@ import com.sparta.neonaduri_back.dto.post.*;
 import com.sparta.neonaduri_back.model.*;
 import com.sparta.neonaduri_back.repository.*;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
+import com.sparta.neonaduri_back.utils.ImageBundle;
 import com.sparta.neonaduri_back.validator.UserInfoValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,8 @@ public class PostService {
     private final PlacesRepository placesRepository;
     private final LikeRepository likeRepository;
     private final ReviewRepository reviewRepository;
-//    private final ImageRepository imageRepository;
     private final UserInfoValidator validator;
+    private final ImageBundle imageBundle;
 
     //방 만들기
     public RoomMakeRequestDto makeRoom(RoomMakeRequestDto roomMakeRequestDto, User user) {
@@ -72,6 +73,7 @@ public class PostService {
         Post post=postRepository.findById(postRequestDto.getPostId()).orElseThrow(
                 ()->new NullPointerException("해당 계획이 없습니다")
         );
+        postRequestDto.setPostImgUrl(imageBundle.searchImage());
         //전체 여행계획 저장
         post.completeSave(postRequestDto,daysList);
         postRepository.save(post);
@@ -89,8 +91,8 @@ public class PostService {
 
         //리팩토링 필요
         for(Likes likes:likesList){
-            Optional<Post> postOptional=postRepository.findById(likes.getPostId());
 
+            Optional<Post> postOptional=postRepository.findById(likes.getPostId());
 
             //찜한 게시물이 존재할 경우
             if(postOptional.isPresent()){
@@ -103,7 +105,6 @@ public class PostService {
                         post.getEndDate(),islike, post.getLikeCnt(),post.getTheme());
                 postList.add(myLikePostDto);
             }
-
         }
 
         int start = pageno * 6;
@@ -279,6 +280,7 @@ public class PostService {
     }
 
     //여행 게시물 삭제
+    @Transactional
     public Long deletePost(UserDetailsImpl userDetails, Long postId) {
         Post post=postRepository.findById(postId).orElseThrow(
                 ()->new IllegalArgumentException("해당 게시물이 없으므로 삭제할 수 없습니다")
@@ -289,6 +291,7 @@ public class PostService {
         reviewRepository.deleteAllByPostId(postId);
         likeRepository.deleteAllByPostId(postId);
         postRepository.deleteById(postId);
+
         return postId;
     }
 
@@ -366,18 +369,6 @@ public class PostService {
             myplanList.add(postListDto);
 
         }
-        /* private Long postId;
-    private String postImgUrl;
-    private String startDate;
-    private String endDate;
-    private String postTitle;
-    private String location;
-    private String theme;
-    private boolean islike;
-    private boolean ispublic;
-    private int likeCnt;
-    private int reviewCnt;*/
-
         int start = pageno * 5;
         int end = Math.min((start + 5), myplanList.size());
 

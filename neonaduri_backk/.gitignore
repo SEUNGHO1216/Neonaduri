@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 application.properties
 aws.yml
+ImageBundle
 ### STS ###
 .apt_generated
 .classpath

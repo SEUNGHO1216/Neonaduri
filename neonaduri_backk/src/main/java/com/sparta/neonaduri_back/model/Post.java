@@ -3,10 +3,12 @@ package com.sparta.neonaduri_back.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sparta.neonaduri_back.dto.post.PostRequestDto;
 import com.sparta.neonaduri_back.dto.post.RoomMakeRequestDto;
+import com.sparta.neonaduri_back.utils.ImageBundle;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import java.util.List;
 @Getter
 @Entity
 public class Post extends Timestamped{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long postId;
@@ -72,9 +75,10 @@ public class Post extends Timestamped{
         this.theme=roomMakeRequestDto.getTheme();
         this.user=user;
     }
+
     //저장할때 추가로 필요한 post정보
     public void completeSave(PostRequestDto postRequestDto,List<Days> daysList){
-        this.postImgUrl="https://pixabay.com/get/g1bf8a51b53e3fddd3c2f2e7f37e49644332fb22979777a43c91474aba52ec9eb7b21bad2cf9c6f77489b1c15debfd447a1ab91f619a20da8d9d339abe6e3e7ab0885aedacaecea6d04ace1892ac6b43c_640.jpg";
+        this.postImgUrl=postRequestDto.getPostImgUrl();
         this.ispublic=postRequestDto.isIspublic();
         this.days=daysList;
     }

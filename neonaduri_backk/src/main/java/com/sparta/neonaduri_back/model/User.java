@@ -41,12 +41,6 @@ public class User {
     @Column(nullable = false)
     private String nickName;
 
-//    @Column(nullable = true)
-//    private String email;
-
-//    @Column(nullable = true)
-//    private Long kakaoId;
-
     @Column(nullable = true)
     private String profileImgUrl;
 
@@ -55,7 +49,7 @@ public class User {
         this.userName = userName;
         this.password = password;
         this.nickName = signupRequestDto.getNickName();
-        this.profileImgUrl = "https://seunghodev-bucket.s3.ap-northeast-2.amazonaws.com/%EA%B0%9C%ED%97%88%ED%83%88.jpg";
+        this.profileImgUrl = "https://seunghodev-bucket.s3.ap-northeast-2.amazonaws.com/default/Group+1.png";
     }
 
     // 카카오 회원가입 + 구글 회원가입

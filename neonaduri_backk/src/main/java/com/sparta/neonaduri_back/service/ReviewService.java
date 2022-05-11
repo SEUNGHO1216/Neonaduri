@@ -152,6 +152,7 @@ public class ReviewService {
     }
 
     //후기 삭제
+    @Transactional
     public Long deleteReview(Long reviewId, UserDetailsImpl userDetails) {
 
         Review review=reviewRepository.findById(reviewId).orElseThrow(
