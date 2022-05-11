@@ -29,7 +29,7 @@ public class Review extends Timestamped{
     @Column(nullable = false)
     private String reviewContents;
 
-    @Column(nullable = true)
+    @Column(nullable = true,length = 500)
     private String reviewImgUrl;
 
     @ManyToOne

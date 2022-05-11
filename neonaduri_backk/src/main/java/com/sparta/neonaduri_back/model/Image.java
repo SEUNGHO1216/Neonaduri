@@ -18,7 +18,7 @@ public class Image {
     @Column(nullable = false)
     private String filename;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 500)
     private String imageUrl;
 
     public Image(String filename, String imageUrl) {

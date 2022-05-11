@@ -44,22 +44,35 @@ public class ReviewService {
     private final UserInfoValidator validator;
     private final S3Uploader s3Uploader;
 
+    /*  private Long reviewId;
+    private String nickName;
+    private String reviewContents;
+    private String reviewImgUrl;
+    private LocalDateTime createdAt;
+    private LocalDateTime modifiedAt;*/
     // 후기 등록
-    public void createReview(Long postId,ReviewRequestDto reviewRequestDto, User user) {
+    public ReviewListDto createReview(Long postId,ReviewRequestDto reviewRequestDto, User user) {
 
         String reviewContents = reviewRequestDto.getReviewContents();
         String reviewImgUrl = reviewRequestDto.getReviewImgUrl();
 
         Review review = new Review(reviewContents, reviewImgUrl,user, postId);
-
         // 후기 저장
         reviewRepository.save(review);
+
+        ReviewListDto reviewListDto=new ReviewListDto(review.getId(), user.getNickName(), reviewContents, reviewImgUrl,
+                review.getCreatedAt(), review.getModifiedAt());
+        return reviewListDto;
     }
 
     // 내용만 등록시
-    public void createReviewOnlyContents(Long postId, String reviewContetns, User user) {
-        Review review=new Review(reviewContetns,user, postId);
+    public ReviewListDto createReviewOnlyContents(Long postId, String reviewContents, User user) {
+
+        Review review=new Review(reviewContents,user, postId);
         reviewRepository.save(review);
+        ReviewListDto reviewListDto=new ReviewListDto(review.getId(), user.getNickName(), reviewContents, review.getReviewImgUrl(),
+                review.getCreatedAt(), review.getModifiedAt());
+        return reviewListDto;
     }
 
     // 후기 조회

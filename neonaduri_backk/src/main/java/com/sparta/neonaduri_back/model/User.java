@@ -41,7 +41,7 @@ public class User {
     @Column(nullable = false)
     private String nickName;
 
-    @Column(nullable = true)
+    @Column(nullable = true,length = 500)
     private String profileImgUrl;
 
     // 회원가입

@@ -43,13 +43,13 @@ public class PostController {
         if(postRequestDto.getPostId()==postId){
 
             StatusMessage message= new StatusMessage();
-            message.setStatus(StatusEnum.OK);
-            message.setData("자랑 성공");
-            return new ResponseEntity<StatusMessage>(message, HttpStatus.OK);
+            message.setStatus(StatusEnum.CREATED);
+            message.setData("201");
+            return new ResponseEntity<StatusMessage>(message, HttpStatus.CREATED);
         }else{
             StatusMessage message= new StatusMessage();
             message.setStatus(StatusEnum.BAD_REQUEST);
-            message.setData("자랑 실패");
+            message.setData("400");
             return new ResponseEntity<StatusMessage>(message, HttpStatus.BAD_REQUEST);
 
         }
@@ -117,11 +117,12 @@ public class PostController {
     //상세조회
     @GetMapping("/api/detail/{postId}")
     public ResponseEntity<Object> showDetail(@PathVariable("postId") Long postId, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
         Post post=postService.showDetail(postId, userDetails);
         if(post==null){
             return ResponseEntity.status(200).body("비공개 게시물입니다");
         }
-        return ResponseEntity.ok(post);
+        return ResponseEntity.status(200).body(post);
     }
 
     //내가 등록한 여행 계획 삭제

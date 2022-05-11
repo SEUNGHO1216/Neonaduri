@@ -16,7 +16,6 @@ configurations {
 
 repositories {
     mavenCentral()
-    //    maven { url 'https://repo.spring.io/libs-milestone' }
 
 }
 
@@ -55,6 +54,9 @@ dependencies {
 
     // firebase
     implementation group: 'com.google.firebase', name: 'firebase-admin', version: '8.1.0'
+
+    // openvidu
+    implementation 'io.openvidu:openvidu-java-client:2.21.1'
 }
 
 tasks.named('test') {

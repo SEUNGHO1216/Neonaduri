@@ -17,7 +17,7 @@ public class Places extends Timestamped {
     @Column(nullable = false)
     private String placeName;
 
-    @Column(nullable = true)
+    @Column(nullable = true, length = 500)
     private String placeInfoUrl;
 
     @Column(nullable = false)

@@ -13,15 +13,13 @@ package com.sparta.neonaduri_back.controller;
  *
  */
 
-import com.sparta.neonaduri_back.dto.review.MyReviewListDto;
-import com.sparta.neonaduri_back.dto.review.ReviewListDto;
-import com.sparta.neonaduri_back.dto.review.ReviewRequestDto;
-import com.sparta.neonaduri_back.dto.review.ReviewResponseDto;
+import com.sparta.neonaduri_back.dto.review.*;
 import com.sparta.neonaduri_back.model.Review;
 import com.sparta.neonaduri_back.model.User;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
 import com.sparta.neonaduri_back.service.ReviewService;
 import com.sparta.neonaduri_back.service.S3Uploader;
+import jdk.net.SocketFlow;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.web.ReactiveSortHandlerMethodArgumentResolver;
@@ -42,22 +40,23 @@ public class ReviewController {
 
     // 후기 등록
     @PostMapping("/{postId}")
-    public ResponseEntity<String> createReview(@PathVariable("postId") Long postId,
-                                               @RequestParam(value = "reviewContents") String reviewContetns,
-                                               @RequestParam(value = "reviewImgFile")MultipartFile multipartFile,
-                                               @AuthenticationPrincipal UserDetailsImpl userDetails
+    public ResponseEntity<ReviewListDto> createReview(@PathVariable("postId") Long postId,
+                                                                 @RequestParam(value = "reviewContents") String reviewContents,
+                                                                 @RequestParam(value = "reviewImgFile")MultipartFile multipartFile,
+                                                                 @AuthenticationPrincipal UserDetailsImpl userDetails
     ) throws IOException {
 
-
+        ReviewListDto reviewListDto;
         if(multipartFile.isEmpty()){
-            reviewService.createReviewOnlyContents(postId, reviewContetns, userDetails.getUser());
+            reviewListDto=reviewService.createReviewOnlyContents(postId, reviewContents, userDetails.getUser());
         }else{
             String reviewImgUrl = S3Uploader.upload(multipartFile, "static");
-            ReviewRequestDto reviewRequestDto = new ReviewRequestDto(reviewContetns, reviewImgUrl);
-            reviewService.createReview(postId, reviewRequestDto, userDetails.getUser());
+            ReviewRequestDto reviewRequestDto = new ReviewRequestDto(reviewContents, reviewImgUrl);
+            reviewListDto=reviewService.createReview(postId, reviewRequestDto, userDetails.getUser());
         }
-        return ResponseEntity.status(201)
-                .body("201");
+
+        //responseEntity.status().body()형태로 담아줘야 json형식으로 간다.
+        return ResponseEntity.status(201).body(reviewListDto);
     }
 
     // 후기 조회 - 페이징 처리
@@ -72,17 +71,17 @@ public class ReviewController {
             islastPage=true;
         }
         ReviewResponseDto reviewResponseDto = new ReviewResponseDto(reviewList, islastPage);
-        return ResponseEntity.status(201)
+        return ResponseEntity.status(200)
                 .body(reviewResponseDto);
     }
 
     //후기 수정
     @PutMapping("/{reviewId}")
     public ResponseEntity<String> updateReviews(@PathVariable("reviewId") Long reviewId,
-                                                @RequestParam("reviewImgUrl") String reviewImgUrl,
-                                                @RequestParam("reviewImgFile") MultipartFile multipartFile,
-                                                @RequestParam("reviewContents") String reviewContents,
-                                                @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
+                                                           @RequestParam("reviewImgUrl") String reviewImgUrl,
+                                                           @RequestParam("reviewImgFile") MultipartFile multipartFile,
+                                                           @RequestParam("reviewContents") String reviewContents,
+                                                           @AuthenticationPrincipal UserDetailsImpl userDetails) throws IOException {
         //파일을 보내지 않은 경우 -> url만 보냈거나, url도 보내지 않은 경우
         if(multipartFile.isEmpty()){
             reviewService.updateReview(reviewId,reviewImgUrl,reviewContents,userDetails);
@@ -90,7 +89,7 @@ public class ReviewController {
             System.out.println(reviewContents);
             reviewService.updateReviewWithFile(reviewId, multipartFile, reviewContents, userDetails);
         }
-        return ResponseEntity.ok("수정 완료 201");
+        return ResponseEntity.status(201).body("201");
     }
 
     //후기 수정 전 다시 조회
@@ -99,19 +98,15 @@ public class ReviewController {
                                                         @AuthenticationPrincipal UserDetailsImpl userDetails){
         ReviewListDto reviewListDto=reviewService.getReviewAgain(reviewId, userDetails);
 
-        return ResponseEntity.status(201).body(reviewListDto);
+        return ResponseEntity.status(200).body(reviewListDto);
     }
 
     //후기 삭제
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<String> deleteReview(@PathVariable("reviewId") Long reviewId,
+    public ResponseEntity<Object> deleteReview(@PathVariable("reviewId") Long reviewId,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails){
-        Long deletedId=reviewService.deleteReview(reviewId,userDetails);
-        if(reviewId==deletedId){
-            return ResponseEntity.status(200).body("200");
-        }else{
-            return  ResponseEntity.status(400).body("400");
-        }
+        reviewService.deleteReview(reviewId,userDetails);
+        return ResponseEntity.status(200).body("201");
     }
 
 }

@@ -50,7 +50,7 @@ public class UserController {
     public ResponseEntity<String> registerUser(@RequestBody SignupRequestDto signupRequestDto, Errors errors) {
         String message = userService.registerUser(signupRequestDto, errors);
         if (message.equals("회원가입 성공")) {
-            return ResponseEntity.status(200)
+            return ResponseEntity.status(201)
                     .body(message);
         } else {
             return ResponseEntity.status(400)
@@ -74,7 +74,7 @@ public class UserController {
     @PostMapping("/api/idcheck")
     public ResponseEntity<String> idcheck(@RequestBody DuplicateCheckDto duplicateCheckDto) {
         if (!userInfoValidator.idDuplichk(duplicateCheckDto.getUserName())) {
-             return ResponseEntity.status(200)
+             return ResponseEntity.status(201)
                      .body("200");
         } else {
             return ResponseEntity.status(400)
@@ -107,8 +107,8 @@ public class UserController {
 
         StatusMessage message= new StatusMessage();
 
-        message.setStatus(StatusEnum.OK);
-        return new ResponseEntity<StatusMessage>(message,HttpStatus.OK);
+        message.setStatus(StatusEnum.CREATED);
+        return new ResponseEntity<StatusMessage>(message,HttpStatus.CREATED);
     }
 
 }

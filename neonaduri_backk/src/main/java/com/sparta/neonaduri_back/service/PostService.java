@@ -258,11 +258,16 @@ public class PostService {
     //게시물 상세조회
     public Post showDetail(Long postId, UserDetailsImpl userDetails) {
 
+
         Post post=postRepository.findById(postId).orElseThrow(
                 ()->new IllegalArgumentException("해당 게시물이 없습니다")
         );
         //전체공개이고
         if(post.isIspublic()){
+
+            //조회수 증가 부분
+            post.setViewCnt(post.getViewCnt()+1);
+            postRepository.save(post);
 
             return postRepository.findById(postId).orElseThrow(
                     ()->new IllegalArgumentException("해당 게시물이 없습니다")

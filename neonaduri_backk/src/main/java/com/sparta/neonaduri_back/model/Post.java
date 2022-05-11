@@ -40,7 +40,7 @@ public class Post extends Timestamped{
     @Column(nullable = false)
     private String location;
 
-    @Column(nullable = true)
+    @Column(nullable = true,length = 500)
     private String postImgUrl;
 
     @Column(nullable = false)
@@ -52,6 +52,9 @@ public class Post extends Timestamped{
 
     @Column(nullable = true)
     private int likeCnt;
+
+    @Column(nullable = true)
+    private int viewCnt;
 
     @Column(nullable = true)
     private boolean ispublic;
@@ -87,6 +90,7 @@ public class Post extends Timestamped{
     public void updateLikeCnt(int likeCnt){
         this.likeCnt=likeCnt;
     }
+
 
 }
 
