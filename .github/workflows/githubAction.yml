@@ -27,3 +27,7 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew clean build
+
+      - name: Make zip file
+        run: zip -r ./CI-CD.zip .
+        shell: bash
