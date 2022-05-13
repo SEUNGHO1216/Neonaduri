@@ -11,11 +11,13 @@ import java.util.List;
 public class ReviewResponseDto {
     private List<ReviewListDto> reviewList;
     private int totalPage;
-    boolean islastPage;
+    private int totalElements;
+    private boolean islastPage;
 
     public ReviewResponseDto(Page<ReviewListDto> reviewList, boolean islastPage) {
         this.reviewList = reviewList.getContent();
         this.totalPage = reviewList.getTotalPages();
+        this.totalElements = (int)reviewList.getTotalElements();
         this.islastPage = islastPage;
 
     }
