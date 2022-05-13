@@ -1,8 +1,4 @@
-# This workflow will build a Java project with Gradle
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
-
-# Repo Action 페이지에 나타날 이름
-name: Neonaduri CI/CD
+name: Neonaduri CICD
 
 # Event Trigger
 # master branch에 push 또는 pull request가 발생할 경우 동작
@@ -15,10 +11,8 @@ on:
 
 jobs:
   build:
-    # 실행 환경 지정
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
 
-    # Task의 sequence를 명시한다.
     steps:
       - uses: actions/checkout@v2
 
@@ -30,5 +24,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # Build
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew build
