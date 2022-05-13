@@ -81,7 +81,7 @@ public class UserService {
                     ()->new IllegalArgumentException("해당 유저가 없습니다")
             );
             //디폴트 이미지
-            profileImgUrl="https://seunghodev-bucket.s3.ap-northeast-2.amazonaws.com/%EA%B0%9C%ED%97%88%ED%83%88.jpg";
+            profileImgUrl="https://seunghodev-bucket.s3.ap-northeast-2.amazonaws.com/default/Group+1.png";
             user.update(profileImgUrl,nickName);
             userRepository.save(user);
         }

@@ -46,7 +46,7 @@ public class PostService {
     //자랑하기
     @Transactional
     public Long showAll(PostRequestDto postRequestDto, User user) {
-
+        System.out.println(user.getNickName());
         postRepository.findByUserAndPostId(user, postRequestDto.getPostId()).orElseThrow(
                 ()->new IllegalArgumentException("방을 생성한 유저만 여행 계획 저장이 가능합니다.")
         );
@@ -156,7 +156,7 @@ public class PostService {
             int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
 
             BestAndLocationDto bestAndLocationDto =new BestAndLocationDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
-                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt);
+                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt, post.getUser());
             bestList.add(bestAndLocationDto);
         }
         return bestList;
@@ -197,7 +197,7 @@ public class PostService {
             int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
 
             BestAndLocationDto bestAndLocationDto =new BestAndLocationDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
-                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt);
+                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt,post.getUser());
             locationList.add(bestAndLocationDto);
         }
 
@@ -245,7 +245,7 @@ public class PostService {
             int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
 
             ThemeAndSearchDto themeAndSearchDto =new ThemeAndSearchDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
-                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt, post.getTheme());
+                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt, post.getTheme(), post.getUser());
             themeList.add(themeAndSearchDto);
         }
 
@@ -329,7 +329,7 @@ public class PostService {
             int reviewCnt=reviewRepository.countByPostId(post.getPostId()).intValue();
 
             ThemeAndSearchDto themeAndSearchDto =new ThemeAndSearchDto(post.getPostId(), post.getPostImgUrl(),post.getPostTitle(),
-                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt, post.getTheme());
+                    post.getLocation(),post.isIslike(), post.getLikeCnt(), reviewCnt, post.getTheme(), post.getUser());
             searchList.add(themeAndSearchDto);
         }
 

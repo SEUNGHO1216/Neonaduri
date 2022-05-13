@@ -27,31 +27,25 @@ public class PostController {
 
     //방 만들어주기
     @PostMapping("/api/makeplan")
-    public RoomMakeRequestDto makeRoom(@RequestBody RoomMakeRequestDto roomMakeRequestDto,
+    public ResponseEntity<RoomMakeRequestDto> makeRoom(@RequestBody RoomMakeRequestDto roomMakeRequestDto,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
         User user= userDetails.getUser();
-        return postService.makeRoom(roomMakeRequestDto, user);
+        return ResponseEntity.status(201).body(postService.makeRoom(roomMakeRequestDto, user));
     }
 
     //자랑하기, 나만보기 저장
     @PutMapping("/api/saveplan")
-    public ResponseEntity<StatusMessage> showAll(@RequestBody PostRequestDto postRequestDto,
+    public ResponseEntity<Object> showAll(@RequestBody PostRequestDto postRequestDto,
                                                  @AuthenticationPrincipal UserDetailsImpl userDetails){
         User user=userDetails.getUser();
         Long postId=postService.showAll(postRequestDto, user);
-        if(postRequestDto.getPostId()==postId){
 
-            StatusMessage message= new StatusMessage();
-            message.setStatus(StatusEnum.CREATED);
-            message.setData("201");
-            return new ResponseEntity<StatusMessage>(message, HttpStatus.CREATED);
+        if(postRequestDto.getPostId().equals(postId)){
+
+            return ResponseEntity.status(201).body("201");
         }else{
-            StatusMessage message= new StatusMessage();
-            message.setStatus(StatusEnum.BAD_REQUEST);
-            message.setData("400");
-            return new ResponseEntity<StatusMessage>(message, HttpStatus.BAD_REQUEST);
-
+            return ResponseEntity.status(400).body("400");
         }
     }
 

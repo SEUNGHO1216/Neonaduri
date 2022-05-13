@@ -1,6 +1,7 @@
 package com.sparta.neonaduri_back.dto.post;
 
 
+import com.sparta.neonaduri_back.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,5 @@ public class BestAndLocationDto {
     private boolean islike;
     private int likeCnt;
     private int reviewCnt;
+    private User user;
 }
