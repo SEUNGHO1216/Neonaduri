@@ -106,7 +106,7 @@ public class ReviewController {
     public ResponseEntity<Object> deleteReview(@PathVariable("reviewId") Long reviewId,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails){
         reviewService.deleteReview(reviewId,userDetails);
-        return ResponseEntity.status(200).body("201");
+        return ResponseEntity.status(200).body("200");
     }
 
 }

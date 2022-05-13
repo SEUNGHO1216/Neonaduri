@@ -59,7 +59,6 @@ public class Post extends Timestamped{
     @Column(nullable = true)
     private boolean ispublic;
 
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User user;

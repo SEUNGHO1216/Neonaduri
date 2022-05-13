@@ -75,7 +75,7 @@ public class UserController {
     public ResponseEntity<String> idcheck(@RequestBody DuplicateCheckDto duplicateCheckDto) {
         if (!userInfoValidator.idDuplichk(duplicateCheckDto.getUserName())) {
              return ResponseEntity.status(201)
-                     .body("200");
+                     .body("201");
         } else {
             return ResponseEntity.status(400)
                     .body("400");

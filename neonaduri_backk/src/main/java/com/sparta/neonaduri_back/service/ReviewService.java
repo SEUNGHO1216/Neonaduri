@@ -16,8 +16,10 @@ package com.sparta.neonaduri_back.service;
 import com.sparta.neonaduri_back.dto.review.MyReviewListDto;
 import com.sparta.neonaduri_back.dto.review.ReviewListDto;
 import com.sparta.neonaduri_back.dto.review.ReviewRequestDto;
+import com.sparta.neonaduri_back.model.Image;
 import com.sparta.neonaduri_back.model.Review;
 import com.sparta.neonaduri_back.model.User;
+import com.sparta.neonaduri_back.repository.ImageRepository;
 import com.sparta.neonaduri_back.repository.PostRepository;
 import com.sparta.neonaduri_back.repository.ReviewRepository;
 import com.sparta.neonaduri_back.security.UserDetailsImpl;
@@ -40,16 +42,11 @@ import java.util.List;
 @Service
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    private final PostRepository postRepository;
+    private final ImageRepository imageRepository;
     private final UserInfoValidator validator;
     private final S3Uploader s3Uploader;
 
-    /*  private Long reviewId;
-    private String nickName;
-    private String reviewContents;
-    private String reviewImgUrl;
-    private LocalDateTime createdAt;
-    private LocalDateTime modifiedAt;*/
+
     // 후기 등록
     public ReviewListDto createReview(Long postId,ReviewRequestDto reviewRequestDto, User user) {
 
@@ -134,7 +131,6 @@ public class ReviewService {
     @Transactional
     public void updateReviewWithFile(Long reviewId, MultipartFile multipartFile, String reviewContents,UserDetailsImpl userDetails) throws IOException {
 
-        System.out.println("서비스단내용"+reviewContents);
         Review review=reviewRepository.findById(reviewId).orElseThrow(
                 ()->new IllegalArgumentException("해당 리뷰가 없습니다")
         );
@@ -174,7 +170,15 @@ public class ReviewService {
         if(review.getUser().getId()!=userDetails.getUser().getId()){
             throw new IllegalArgumentException("리뷰 작성자만 삭제가 가능합니다");
         }
-        reviewRepository.deleteById(reviewId);
+        Image image=imageRepository.findByImageUrl(review.getReviewImgUrl()).orElse(null);
+        if(image==null){
+            reviewRepository.deleteById(reviewId);
+        }else{
+            s3Uploader.deleteImage(image.getFilename());
+            imageRepository.deleteByFilename(image.getFilename());
+            reviewRepository.deleteById(reviewId);
+        }
+
         return reviewId;
     }
 
